@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brown: #3D2317;
+  --cream: #F4E8C5;
+  --orange: #E87422;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--cream); color: var(--brown); font-family: var(--font-inter), system-ui, sans-serif; }
+
+.pattern-zigzag {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent 0 10px,
+    rgba(232, 116, 34, 0.06) 10px 11px
+  ), repeating-linear-gradient(
+    -45deg,
+    transparent 0 10px,
+    rgba(232, 116, 34, 0.06) 10px 11px
+  );
+}
+
+.btn-orange {
+  @apply inline-flex items-center justify-center bg-orange text-white font-semibold uppercase tracking-wide px-6 py-3 hover:bg-orange-dark transition-colors;
+}
+.btn-outline {
+  @apply inline-flex items-center justify-center border border-orange text-orange uppercase tracking-wide px-6 py-3 hover:bg-orange hover:text-white transition-colors text-sm font-semibold;
+}
