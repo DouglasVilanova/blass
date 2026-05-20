@@ -1,8 +1,7 @@
-import { readStore, writeStore } from "./store";
+import { createClient, createAdminSupabase } from "./supabase/server";
 import type { SiteSettings } from "./types";
 import { DEFAULT_STORE } from "./defaults";
 
-/** Deep merge of partial settings over defaults so missing keys never break the LP. */
 export function mergeSettings(partial?: Partial<SiteSettings>): SiteSettings {
   const base = DEFAULT_STORE.settings;
   if (!partial) return base;
@@ -18,8 +17,9 @@ export function mergeSettings(partial?: Partial<SiteSettings>): SiteSettings {
 
 export async function getSettings(): Promise<SiteSettings> {
   try {
-    const s = await readStore();
-    return mergeSettings(s.settings);
+    const sb = createClient();
+    const { data } = await sb.from("settings").select("data").eq("id", 1).single();
+    return mergeSettings(data?.data as Partial<SiteSettings>);
   } catch {
     return DEFAULT_STORE.settings;
   }
@@ -27,14 +27,13 @@ export async function getSettings(): Promise<SiteSettings> {
 
 export async function saveSettingsSection<K extends keyof SiteSettings>(
   section: K,
-  value: SiteSettings[K] | Partial<SiteSettings[K]>
+  value: SiteSettings[K]
 ): Promise<void> {
-  const s = await readStore();
-  const current = (s.settings as any)[section];
-  if (Array.isArray(value) || typeof value !== "object" || value === null) {
-    (s.settings as any)[section] = value;
-  } else {
-    (s.settings as any)[section] = { ...current, ...value };
-  }
-  await writeStore(s);
+  const sb = createAdminSupabase();
+  const jsonValue = JSON.parse(JSON.stringify(value)); // ensure plain object
+  const { error } = await sb.rpc("update_settings_section", {
+    p_section: section as string,
+    p_value: jsonValue,
+  });
+  if (error) throw new Error(error.message);
 }

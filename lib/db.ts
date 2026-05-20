@@ -1,0 +1,179 @@
+/**
+ * Data access layer — all queries go through here.
+ * Uses service-role client (bypasses RLS) for write operations.
+ * Uses anon client for reads where possible.
+ */
+import { createAdminSupabase, createClient } from "./supabase/server";
+import type { BlogCategory, BlogPost, Category, Product } from "./types";
+
+// ────────────────────────────────────────────────────────────
+// CATEGORIES
+// ────────────────────────────────────────────────────────────
+
+export async function getCategories(): Promise<Category[]> {
+  const sb = createClient();
+  const { data } = await sb.from("categories").select("*").order("sort_order");
+  if (!data) return [];
+  return data.map(rowToCategory);
+}
+
+export async function upsertCategory(c: Category): Promise<void> {
+  const sb = createAdminSupabase();
+  await sb.from("categories").upsert({
+    slug: c.slug,
+    name: c.name,
+    description: c.description ?? null,
+    icon: c.icon ?? "lamp",
+    subcategories: c.subcategories,
+  });
+}
+
+export async function deleteCategoryDb(slug: string): Promise<void> {
+  const sb = createAdminSupabase();
+  await sb.from("categories").delete().eq("slug", slug);
+}
+
+function rowToCategory(r: any): Category {
+  return {
+    slug: r.slug,
+    name: r.name,
+    description: r.description ?? undefined,
+    icon: r.icon ?? "lamp",
+    subcategories: Array.isArray(r.subcategories) ? r.subcategories : [],
+  };
+}
+
+// ────────────────────────────────────────────────────────────
+// PRODUCTS
+// ────────────────────────────────────────────────────────────
+
+export async function getProducts(publishedOnly = false): Promise<Product[]> {
+  const sb = createClient();
+  let q = sb.from("products").select("*").order("created_at", { ascending: false });
+  if (publishedOnly) q = q.eq("published", true);
+  const { data } = await q;
+  if (!data) return [];
+  return data.map(rowToProduct);
+}
+
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  const sb = createClient();
+  const { data } = await sb.from("products").select("*").eq("slug", slug).single();
+  return data ? rowToProduct(data) : null;
+}
+
+export async function upsertProduct(p: Product): Promise<void> {
+  const sb = createAdminSupabase();
+  await sb.from("products").upsert({
+    id: p.id,
+    slug: p.slug,
+    name: p.name,
+    category: p.category,
+    subcategory: p.subcategory ?? null,
+    short_description: p.shortDescription ?? null,
+    description: p.description ?? null,
+    image: p.image ?? null,
+    gallery: p.gallery ?? [],
+    featured: p.featured ?? false,
+    published: p.published ?? true,
+    created_at: p.createdAt,
+  });
+}
+
+export async function deleteProductDb(id: string): Promise<void> {
+  const sb = createAdminSupabase();
+  await sb.from("products").delete().eq("id", id);
+}
+
+function rowToProduct(r: any): Product {
+  return {
+    id: r.id,
+    slug: r.slug,
+    name: r.name,
+    category: r.category ?? "",
+    subcategory: r.subcategory ?? undefined,
+    shortDescription: r.short_description ?? undefined,
+    description: r.description ?? undefined,
+    image: r.image ?? undefined,
+    gallery: r.gallery ?? [],
+    featured: r.featured ?? false,
+    published: r.published ?? true,
+    createdAt: r.created_at,
+  };
+}
+
+// ────────────────────────────────────────────────────────────
+// BLOG CATEGORIES
+// ────────────────────────────────────────────────────────────
+
+export async function getBlogCategories(): Promise<BlogCategory[]> {
+  const sb = createClient();
+  const { data } = await sb.from("blog_categories").select("*");
+  if (!data) return [];
+  return data.map((r) => ({ slug: r.slug, name: r.name }));
+}
+
+export async function upsertBlogCategory(c: BlogCategory): Promise<void> {
+  const sb = createAdminSupabase();
+  await sb.from("blog_categories").upsert({ slug: c.slug, name: c.name });
+}
+
+export async function deleteBlogCategoryDb(slug: string): Promise<void> {
+  const sb = createAdminSupabase();
+  await sb.from("blog_categories").delete().eq("slug", slug);
+}
+
+// ────────────────────────────────────────────────────────────
+// BLOG POSTS
+// ────────────────────────────────────────────────────────────
+
+export async function getBlogPosts(publishedOnly = false): Promise<BlogPost[]> {
+  const sb = createAdminSupabase(); // need admin to see drafts in admin
+  let q = sb.from("blog_posts").select("*").order("created_at", { ascending: false });
+  if (publishedOnly) q = q.eq("published", true);
+  const { data } = await q;
+  if (!data) return [];
+  return data.map(rowToPost);
+}
+
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  const sb = createClient();
+  const { data } = await sb.from("blog_posts").select("*").eq("slug", slug).eq("published", true).single();
+  return data ? rowToPost(data) : null;
+}
+
+export async function upsertBlogPost(p: BlogPost): Promise<void> {
+  const sb = createAdminSupabase();
+  await sb.from("blog_posts").upsert({
+    id: p.id,
+    slug: p.slug,
+    title: p.title,
+    excerpt: p.excerpt ?? null,
+    body: p.body,
+    cover_image: p.coverImage ?? null,
+    category: p.category ?? null,
+    published: p.published,
+    published_at: p.publishedAt ?? null,
+    created_at: p.createdAt,
+  });
+}
+
+export async function deleteBlogPostDb(id: string): Promise<void> {
+  const sb = createAdminSupabase();
+  await sb.from("blog_posts").delete().eq("id", id);
+}
+
+function rowToPost(r: any): BlogPost {
+  return {
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    excerpt: r.excerpt ?? undefined,
+    body: r.body ?? "",
+    coverImage: r.cover_image ?? undefined,
+    category: r.category ?? undefined,
+    published: r.published ?? false,
+    publishedAt: r.published_at ?? undefined,
+    createdAt: r.created_at,
+  };
+}
