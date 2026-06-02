@@ -16,6 +16,14 @@ import type { BlogCategory, BlogPost, Category, Product } from "@/lib/types";
 // PRODUTOS
 // ────────────────────────────────────────────────────────────
 
+function parseTags(formData: FormData): string[] {
+  try {
+    const raw = String(formData.get("tags") ?? "[]");
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.map(String).filter(Boolean) : [];
+  } catch { return []; }
+}
+
 export async function createProduct(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   if (!name) return;
@@ -28,6 +36,7 @@ export async function createProduct(formData: FormData) {
     shortDescription: String(formData.get("shortDescription") ?? "") || undefined,
     description: String(formData.get("description") ?? "") || undefined,
     image: String(formData.get("image") ?? "") || undefined,
+    tags: parseTags(formData),
     featured: formData.get("featured") === "on",
     published: formData.get("published") === "on",
     createdAt: new Date().toISOString(),
@@ -39,8 +48,6 @@ export async function createProduct(formData: FormData) {
 }
 
 export async function updateProduct(id: string, formData: FormData) {
-  const categories = await getCategories();
-  const cat = categories.find((c) => c.slug === String(formData.get("category") ?? ""));
   const p: Product = {
     id,
     slug: slugify(String(formData.get("slug") || formData.get("name") || id)),
@@ -50,6 +57,7 @@ export async function updateProduct(id: string, formData: FormData) {
     shortDescription: String(formData.get("shortDescription") ?? "") || undefined,
     description: String(formData.get("description") ?? "") || undefined,
     image: String(formData.get("image") ?? "") || undefined,
+    tags: parseTags(formData),
     featured: formData.get("featured") === "on",
     published: formData.get("published") === "on",
     createdAt: new Date().toISOString(),

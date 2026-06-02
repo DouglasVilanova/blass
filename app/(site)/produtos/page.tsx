@@ -1,58 +1,202 @@
-import Link from "next/link";
-import { readStore } from "@/lib/store";
+import { Suspense } from "react";
+import { getCategories, getProducts } from "@/lib/db";
+import type { Product } from "@/lib/types";
+import ProductCard from "@/components/site/ProductCard";
+import ProductFilters from "@/components/site/ProductFilters";
+import { LayoutGrid, List } from "lucide-react";
 
+export const revalidate = 0;
 export const metadata = { title: "Produtos — Blass" };
 
-export default async function ProductsIndex() {
-  const { categories, products } = await readStore();
+type PageProps = {
+  searchParams: {
+    q?: string;
+    cat?: string;
+    sub?: string | string[];
+    tag?: string | string[];
+    featured?: string;
+    sort?: string;
+    view?: string;
+  };
+};
+
+function arr(v: string | string[] | undefined): string[] {
+  if (!v) return [];
+  return Array.isArray(v) ? v : [v];
+}
+
+function filterProducts(products: Product[], sp: PageProps["searchParams"]): Product[] {
+  let out = [...products];
+
+  // Search
+  if (sp.q) {
+    const q = sp.q.toLowerCase();
+    out = out.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.shortDescription?.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q)
+    );
+  }
+
+  // Category
+  if (sp.cat) out = out.filter((p) => p.category === sp.cat);
+
+  // Subcategories
+  const subs = arr(sp.sub);
+  if (subs.length > 0) out = out.filter((p) => p.subcategory && subs.includes(p.subcategory));
+
+  // Tags
+  const tags = arr(sp.tag);
+  if (tags.length > 0)
+    out = out.filter((p) => tags.every((t) => p.tags?.includes(t)));
+
+  // Featured
+  if (sp.featured === "1") out = out.filter((p) => p.featured);
+
+  // Sort
+  switch (sp.sort) {
+    case "az":
+      out.sort((a, b) => a.name.localeCompare(b.name, "pt"));
+      break;
+    case "za":
+      out.sort((a, b) => b.name.localeCompare(a.name, "pt"));
+      break;
+    case "featured":
+      out.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+      break;
+    default: // newest
+      out.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  return out;
+}
+
+export default async function ProductsPage({ searchParams }: PageProps) {
+  const [allProducts, categories] = await Promise.all([
+    getProducts(true), // published only
+    getCategories(),
+  ]);
+
+  const filtered = filterProducts(allProducts, searchParams);
+
+  // Collect all unique tags across products
+  const allTags = [...new Set(allProducts.flatMap((p) => p.tags ?? []))].sort();
+
+  const catMap = Object.fromEntries(categories.map((c) => [c.slug, c]));
+  const view = searchParams.view ?? "grid";
+
+  const activeCatName = searchParams.cat
+    ? categories.find((c) => c.slug === searchParams.cat)?.name
+    : null;
+
   return (
-    <section className="bg-cream py-16">
-      <div className="mx-auto max-w-6xl px-6">
-        <h1 className="font-display text-4xl text-brown">Nossos produtos</h1>
-        <p className="text-brown/80 mt-2 max-w-2xl">Explore por categoria ou veja a linha completa abaixo.</p>
-
-        <div className="mt-10 grid md:grid-cols-2 gap-6">
-          {categories.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/produtos/${c.slug}`}
-              className="block bg-brown text-cream-light p-8 border border-orange/40 hover:bg-brown-mid transition-colors"
-            >
-              <div className="text-orange text-xs tracking-widest font-semibold">CATEGORIA</div>
-              <div className="mt-1 font-display text-2xl uppercase">{c.name}</div>
-              <p className="text-cream-light/80 text-sm mt-3">{c.description}</p>
-              <div className="text-orange text-xs mt-4 tracking-wider">Ver produtos →</div>
-            </Link>
-          ))}
-        </div>
-
-        <h2 className="mt-16 font-display text-2xl text-brown">Todos os produtos</h2>
-        <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.filter((p) => p.published !== false).map((p) => {
-            const cat = categories.find((c) => c.slug === p.category);
-            return (
-              <Link
-                key={p.id}
-                href={`/produtos/${p.category}/${p.slug}`}
-                className="group block bg-white border border-brown/10 hover:border-orange transition-colors"
-              >
-                <div className="aspect-square bg-cream-dark overflow-hidden">
-                  {p.image ? (
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-brown/30 text-xs">sem imagem</div>
-                  )}
-                </div>
-                <div className="p-4">
-                  <div className="text-[10px] tracking-widest text-orange">{cat?.name?.toUpperCase()}</div>
-                  <div className="font-semibold text-brown mt-1">{p.name}</div>
-                  {p.shortDescription && <p className="text-xs text-brown/70 mt-1 line-clamp-2">{p.shortDescription}</p>}
-                </div>
-              </Link>
-            );
-          })}
+    <div className="bg-cream min-h-screen">
+      {/* Page header */}
+      <div className="bg-brown text-cream-light py-10">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="text-xs tracking-widest text-orange mb-1">CATÁLOGO</div>
+          <h1 className="font-display text-4xl">
+            {activeCatName ?? "Todos os Produtos"}
+          </h1>
+          <p className="text-cream-light/60 text-sm mt-2">
+            Iluminação e componentes para móveis e ambientes.
+          </p>
         </div>
       </div>
-    </section>
+
+      <div className="mx-auto max-w-7xl px-6 py-10">
+        <div className="flex gap-8 items-start">
+
+          {/* Sidebar filters — desktop */}
+          <div className="hidden lg:block w-64 flex-shrink-0 sticky top-4">
+            <Suspense>
+              <ProductFilters
+                categories={categories}
+                allTags={allTags}
+                total={allProducts.length}
+                filtered={filtered.length}
+              />
+            </Suspense>
+          </div>
+
+          {/* Products area */}
+          <div className="flex-1 min-w-0">
+
+            {/* Toolbar */}
+            <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+              <div className="text-sm text-brown/60">
+                <span className="font-semibold text-brown">{filtered.length}</span> produto{filtered.length !== 1 ? "s" : ""}
+                {searchParams.q && (
+                  <span> para "<em>{searchParams.q}</em>"</span>
+                )}
+              </div>
+
+              {/* Active filter pills */}
+              <div className="flex flex-wrap gap-2">
+                {arr(searchParams.sub).map((s) => {
+                  const cat = categories.find((c) => c.slug === searchParams.cat);
+                  const sub = cat?.subcategories.find((sc) => sc.slug === s);
+                  return (
+                    <span key={s} className="flex items-center gap-1 text-xs bg-orange/10 text-orange px-2 py-1 border border-orange/30">
+                      {sub?.name ?? s}
+                    </span>
+                  );
+                })}
+                {arr(searchParams.tag).map((t) => (
+                  <span key={t} className="flex items-center gap-1 text-xs bg-brown/10 text-brown px-2 py-1">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile filters (horizontal scroll) */}
+            <div className="lg:hidden mb-6">
+              <Suspense>
+                <MobileFilters categories={categories} searchParams={searchParams} />
+              </Suspense>
+            </div>
+
+            {/* Grid or empty */}
+            {filtered.length === 0 ? (
+              <div className="py-24 text-center">
+                <div className="font-display text-3xl text-brown/30">Nenhum produto encontrado</div>
+                <p className="text-sm text-brown/50 mt-2">Tente outros filtros.</p>
+              </div>
+            ) : (
+              <div className={`grid gap-4 ${view === "list" ? "grid-cols-1" : "sm:grid-cols-2 xl:grid-cols-3"}`}>
+                {filtered.map((p) => (
+                  <ProductCard key={p.id} product={p} category={catMap[p.category]} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Mobile: horizontal chip scroll for categories
+function MobileFilters({ categories, searchParams }: { categories: any[]; searchParams: any }) {
+  return (
+    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+      <a
+        href="/produtos"
+        className={`flex-shrink-0 text-xs px-3 py-1.5 border whitespace-nowrap ${!searchParams.cat ? "bg-orange text-white border-orange" : "bg-white text-brown border-brown/20"}`}
+      >
+        Todas
+      </a>
+      {categories.map((c: any) => (
+        <a
+          key={c.slug}
+          href={`/produtos?cat=${c.slug}`}
+          className={`flex-shrink-0 text-xs px-3 py-1.5 border whitespace-nowrap ${searchParams.cat === c.slug ? "bg-orange text-white border-orange" : "bg-white text-brown border-brown/20"}`}
+        >
+          {c.name}
+        </a>
+      ))}
+    </div>
   );
 }

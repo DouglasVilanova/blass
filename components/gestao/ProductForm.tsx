@@ -16,6 +16,8 @@ type Props = {
 export default function ProductForm({ action, categories, initial }: Props) {
   const [catSlug, setCatSlug] = useState(initial?.category ?? categories[0]?.slug ?? "");
   const [image, setImage] = useState(initial?.image ?? "");
+  const [tags, setTags] = useState<string[]>(initial?.tags ?? []);
+  const [tagInput, setTagInput] = useState("");
   const [pending, setPending] = useState(false);
   const { push } = useToast();
   const router = useRouter();
@@ -27,9 +29,9 @@ export default function ProductForm({ action, categories, initial }: Props) {
     setPending(true);
     try {
       const fd = new FormData(e.currentTarget);
-      // Inject image URL (managed by ImageUpload, not a native file input)
       fd.set("image", image);
       fd.set("category", catSlug);
+      fd.set("tags", JSON.stringify(tags));
       await action(fd);
     } catch (err: any) {
       push(err?.message ?? "Erro ao salvar", "error");
@@ -101,6 +103,47 @@ export default function ProductForm({ action, categories, initial }: Props) {
             defaultValue={initial?.description}
           />
         </Field>
+      </section>
+
+      {/* Tags */}
+      <section className="bg-white border border-brown/10 p-6 space-y-4">
+        <h2 className="font-display text-lg text-brown">Características / Tags</h2>
+        <p className="text-xs text-brown/50">Use para cor, material, tamanho, tipo… Ex: "Preto", "Alumínio", "3mm". Aparecem como filtro na loja.</p>
+        <div className="flex flex-wrap gap-2">
+          {tags.map((t) => (
+            <span key={t} className="flex items-center gap-1.5 text-xs bg-cream-dark border border-brown/20 px-2.5 py-1">
+              {t}
+              <button type="button" onClick={() => setTags(tags.filter((x) => x !== t))} className="text-brown/40 hover:text-red-600">×</button>
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-2 max-w-sm">
+          <input
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={(e) => {
+              if ((e.key === "Enter" || e.key === ",") && tagInput.trim()) {
+                e.preventDefault();
+                const t = tagInput.trim().replace(/,$/, "");
+                if (!tags.includes(t)) setTags([...tags, t]);
+                setTagInput("");
+              }
+            }}
+            placeholder="Digite e pressione Enter"
+            className="border border-brown/20 px-3 py-2 text-sm flex-1 focus:outline-none focus:border-orange"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const t = tagInput.trim();
+              if (t && !tags.includes(t)) setTags([...tags, t]);
+              setTagInput("");
+            }}
+            className="btn-outline text-xs px-4"
+          >
+            Adicionar
+          </button>
+        </div>
       </section>
 
       {/* Opções */}

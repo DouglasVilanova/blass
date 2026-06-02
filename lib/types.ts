@@ -17,6 +17,7 @@ export type Product = {
   description?: string;    // long, html or markdown
   image?: string;
   gallery?: string[];
+  tags?: string[];         // e.g. ["Preto", "Alumínio", "3mm"]
   featured?: boolean;
   published?: boolean;
   createdAt: string;
