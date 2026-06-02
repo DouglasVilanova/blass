@@ -1,25 +1,23 @@
 import { notFound } from "next/navigation";
-import { readStore } from "@/lib/store";
-import { updateProduct } from "../../actions";
+import PageHeader from "@/components/gestao/PageHeader";
 import ProductForm from "@/components/gestao/ProductForm";
+import { getCategories, getProducts } from "@/lib/db";
+import { updateProduct } from "@/app/gestao/actions";
 
 export default async function EditarProduto({ params }: { params: { id: string } }) {
-  const { products, categories } = await readStore();
+  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
   const product = products.find((p) => p.id === params.id);
   if (!product) notFound();
 
-  async function action(formData: FormData) {
+  async function action(fd: FormData) {
     "use server";
-    await updateProduct(params.id, formData);
+    await updateProduct(params.id, fd);
   }
 
   return (
-    <div>
-      <h1 className="font-display text-3xl">Editar produto</h1>
-      <p className="text-brown/70 mt-2">{product.name}</p>
-      <div className="mt-8">
-        <ProductForm action={action} categories={categories} initial={product} />
-      </div>
-    </div>
+    <>
+      <PageHeader title="Editar produto" subtitle={product.name} />
+      <ProductForm action={action} categories={categories} initial={product} />
+    </>
   );
 }

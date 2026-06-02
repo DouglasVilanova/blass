@@ -1,16 +1,14 @@
-import { readStore } from "@/lib/store";
-import { createProduct } from "../../actions";
+import PageHeader from "@/components/gestao/PageHeader";
 import ProductForm from "@/components/gestao/ProductForm";
+import { getCategories } from "@/lib/db";
+import { createProduct } from "@/app/gestao/actions";
 
 export default async function NovoProduto() {
-  const { categories } = await readStore();
+  const categories = await getCategories();
   return (
-    <div>
-      <h1 className="font-display text-3xl">Novo produto</h1>
-      <p className="text-brown/70 mt-2">Preencha os campos abaixo.</p>
-      <div className="mt-8">
-        <ProductForm action={createProduct} categories={categories} />
-      </div>
-    </div>
+    <>
+      <PageHeader title="Novo produto" subtitle="Preencha os dados e salve. Imagem otimizada automaticamente." />
+      <ProductForm action={createProduct} categories={categories} />
+    </>
   );
 }
