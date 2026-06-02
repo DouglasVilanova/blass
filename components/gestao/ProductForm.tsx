@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Field, inputCls } from "./Field";
 import ImageUpload from "./ImageUpload";
+import GalleryUpload from "./GalleryUpload";
 import { useToast } from "./Toast";
 import type { Category, Product } from "@/lib/types";
 
@@ -16,6 +17,7 @@ type Props = {
 export default function ProductForm({ action, categories, initial }: Props) {
   const [catSlug, setCatSlug] = useState(initial?.category ?? categories[0]?.slug ?? "");
   const [image, setImage] = useState(initial?.image ?? "");
+  const [gallery, setGallery] = useState<string[]>(initial?.gallery ?? []);
   const [tags, setTags] = useState<string[]>(initial?.tags ?? []);
   const [tagInput, setTagInput] = useState("");
   const [pending, setPending] = useState(false);
@@ -30,6 +32,7 @@ export default function ProductForm({ action, categories, initial }: Props) {
     try {
       const fd = new FormData(e.currentTarget);
       fd.set("image", image);
+      fd.set("gallery", JSON.stringify(gallery));
       fd.set("category", catSlug);
       fd.set("tags", JSON.stringify(tags));
       await action(fd);
@@ -51,6 +54,12 @@ export default function ProductForm({ action, categories, initial }: Props) {
           folder="products"
           hint="Máx. 10 MB. Convertida automaticamente para WebP otimizado."
         />
+      </section>
+
+      {/* Galeria */}
+      <section className="bg-white border border-brown/10 p-6">
+        <h2 className="font-display text-lg text-brown mb-4">Galeria de fotos</h2>
+        <GalleryUpload value={gallery} onChange={setGallery} folder="products" />
       </section>
 
       {/* Identificação */}

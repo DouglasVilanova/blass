@@ -16,9 +16,9 @@ import type { BlogCategory, BlogPost, Category, Product } from "@/lib/types";
 // PRODUTOS
 // ────────────────────────────────────────────────────────────
 
-function parseTags(formData: FormData): string[] {
+function parseJsonArray(formData: FormData, key: string): string[] {
   try {
-    const raw = String(formData.get("tags") ?? "[]");
+    const raw = String(formData.get(key) ?? "[]");
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed.map(String).filter(Boolean) : [];
   } catch { return []; }
@@ -36,7 +36,8 @@ export async function createProduct(formData: FormData) {
     shortDescription: String(formData.get("shortDescription") ?? "") || undefined,
     description: String(formData.get("description") ?? "") || undefined,
     image: String(formData.get("image") ?? "") || undefined,
-    tags: parseTags(formData),
+    gallery: parseJsonArray(formData, "gallery"),
+    tags: parseJsonArray(formData, "tags"),
     featured: formData.get("featured") === "on",
     published: formData.get("published") === "on",
     createdAt: new Date().toISOString(),
@@ -57,7 +58,8 @@ export async function updateProduct(id: string, formData: FormData) {
     shortDescription: String(formData.get("shortDescription") ?? "") || undefined,
     description: String(formData.get("description") ?? "") || undefined,
     image: String(formData.get("image") ?? "") || undefined,
-    tags: parseTags(formData),
+    gallery: parseJsonArray(formData, "gallery"),
+    tags: parseJsonArray(formData, "tags"),
     featured: formData.get("featured") === "on",
     published: formData.get("published") === "on",
     createdAt: new Date().toISOString(),
