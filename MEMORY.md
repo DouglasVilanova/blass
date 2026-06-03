@@ -27,7 +27,7 @@ Padrão zigzag: `.pattern-zigzag` (globals.css)
 | Linguagem | TypeScript strict |
 | Estilo | Tailwind CSS 3 |
 | Banco | Supabase Postgres |
-| Auth | Supabase Auth (a implementar) |
+| Auth | Supabase Auth ✅ (login + middleware + guard) |
 | Storage | Supabase bucket `site-images` |
 | Otimização imagem | Sharp → WebP 1400px max, quality 82 |
 | Deploy | Vercel |
@@ -140,6 +140,8 @@ featured, published, createdAt
 | `lib/supabase/server.ts` | Server client (cookie) + admin (service role) |
 | `lib/db.ts` | CRUD: getCategories, getProducts, upsertProduct, etc. |
 | `lib/settings.ts` | getSettings() + saveSettingsSection() + mergeSettings() |
+| `lib/auth-guard.ts` | requireAdmin() + validatePassword() |
+| `lib/rate-limit.ts` | In-memory rate limiter |
 | `lib/store.ts` | Facade: readStore() monta Store completo via lib/db |
 | `lib/upload.ts` | Sharp optimize → WebP → Supabase Storage upload |
 | `lib/types.ts` | Todos os tipos TypeScript |
@@ -189,10 +191,32 @@ Settings `visibility.*` controla:
 Blocos toggleáveis: `stats`, `tagline`, `highlight`, `reach`
 Blocos sempre visíveis: hero, sobre, categorias-cards, menu, rodape
 
+## Segurança (implementado)
+- `middleware.ts` — protege `/gestao/*`, redireciona `/gestao/login`, refresh session
+- `lib/auth-guard.ts` — `requireAdmin()` em toda server action de escrita; `validatePassword()` (10 chars + upper + lower + digit)
+- `lib/rate-limit.ts` — in-memory, login 5 tentativas/15min por IP+email
+- `app/gestao/login/` — página pública de login + signIn/signOut actions
+- `app/gestao/security/` — troca de senha com validação de política
+- `next.config.mjs` — HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, CSP
+
+### CSP inclui
+- Google Analytics / GTM ready
+- Supabase storage (`*.supabase.co`)
+- YouTube frames (blog vídeos futuros)
+- Inline styles (Tailwind)
+
+## Páginas especiais
+- `app/not-found.tsx` — 404 branded Blass
+- `app/error.tsx` — 500 branded com retry
+- `app/opengraph-image.tsx` — OG dinâmico via `next/og` (edge runtime)
+
+## Criar primeiro admin (Supabase)
+Dashboard → Authentication → Users → **Add user** → email + senha
+
 ## Próximos Passos Planejados
-- [ ] Auth Supabase: login admin em `/gestao/login` + guard em `(protected)` layout
-- [ ] Troca de senha em `/gestao/security`
-- [ ] Middleware de sessão (`middleware.ts`)
+- [x] Auth Supabase: login + middleware + guard ✅
+- [x] Troca de senha `/gestao/security` ✅
+- [x] Middleware de sessão ✅
 - [ ] Upload imagem para blocos do site (hero, destaque, etc.)
 - [ ] Formulário de contato funcional (POST `/api/contact` → email via Resend)
 - [ ] SEO: sitemap.xml + robots.txt automáticos
