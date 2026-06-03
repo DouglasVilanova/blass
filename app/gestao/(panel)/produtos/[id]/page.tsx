@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import PageHeader from "@/components/gestao/PageHeader";
 import ProductForm from "@/components/gestao/ProductForm";
 import { getCategories, getProducts } from "@/lib/db";
-import { updateProduct } from "@/app/gestao/actions";
+import { updateProduct } from "@/app/gestao/(panel)/actions";
 
 export default async function EditarProduto({ params }: { params: { id: string } }) {
   const [products, categories] = await Promise.all([getProducts(), getCategories()]);

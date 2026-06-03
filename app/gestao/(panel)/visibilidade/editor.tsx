@@ -1,7 +1,7 @@
 "use client";
 
 import SectionEditor from "@/components/gestao/SectionEditor";
-import { saveSection } from "@/app/gestao/settings-actions";
+import { saveSection } from "@/app/gestao/(panel)/settings-actions";
 import type { SiteVisibility } from "@/lib/types";
 
 const TOGGLES: { key: keyof SiteVisibility; label: string; description: string }[] = [

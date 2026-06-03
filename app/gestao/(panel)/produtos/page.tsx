@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCategories, getProducts } from "@/lib/db";
-import { deleteProduct } from "@/app/gestao/actions";
+import { deleteProduct } from "@/app/gestao/(panel)/actions";
 import PageHeader from "@/components/gestao/PageHeader";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 

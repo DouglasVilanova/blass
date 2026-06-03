@@ -2,7 +2,7 @@
 
 import SectionEditor from "@/components/gestao/SectionEditor";
 import { Field, inputCls } from "@/components/gestao/Field";
-import { saveSection } from "@/app/gestao/settings-actions";
+import { saveSection } from "@/app/gestao/(panel)/settings-actions";
 import type { SiteSettings } from "@/lib/types";
 
 export default function CategoriasCardsEditor({ initial }: { initial: SiteSettings["categoriesIntro"] }) {
