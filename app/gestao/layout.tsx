@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { Boxes, FileText, Home, Settings as SettingsIcon, Tags, Eye, Code2, LogOut, LayoutGrid, Image as ImageIcon, BarChart3, Sparkles, Megaphone, Phone, Type } from "lucide-react";
+import { Boxes, FileText, Home, Tags, Eye, Code2, LogOut, LayoutGrid, Image as ImageIcon, BarChart3, Sparkles, Megaphone, Phone, Type, Shield } from "lucide-react";
 import { ToastProvider } from "@/components/gestao/Toast";
 import { getSettings } from "@/lib/settings";
+import { createClient } from "@/lib/supabase/server";
+import { signOut } from "@/app/gestao/login/actions";
 import type { SiteVisibility } from "@/lib/types";
 
 type Item = {
@@ -30,6 +32,7 @@ const GERAL: Item[] = [
   { href: "/gestao/blog", label: "Blog", icon: FileText },
   { href: "/gestao/visibilidade", label: "Visibilidade", icon: Eye },
   { href: "/gestao/seo", label: "SEO", icon: Code2 },
+  { href: "/gestao/security", label: "Segurança", icon: Shield },
 ];
 
 function filterByVisibility(items: Item[], v: SiteVisibility) {
@@ -39,6 +42,14 @@ function filterByVisibility(items: Item[], v: SiteVisibility) {
 export default async function GestaoLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();
   const blocos = filterByVisibility(BLOCOS, settings.visibility);
+
+  // Get current user for display (may be null on login page)
+  let userEmail: string | null = null;
+  try {
+    const sb = createClient();
+    const { data: { user } } = await sb.auth.getUser();
+    userEmail = user?.email ?? null;
+  } catch { /* no-op */ }
 
   return (
     <ToastProvider>
@@ -65,8 +76,20 @@ export default async function GestaoLayout({ children }: { children: React.React
             ))}
           </nav>
 
-          <div className="mt-12 px-6 pb-6 text-[10px] text-cream-light/40 space-y-2">
-            <Link href="/" className="flex items-center gap-2 hover:text-orange"><LogOut className="w-3 h-3" /> voltar ao site</Link>
+          <div className="mt-auto px-6 pb-6 pt-8 space-y-3 border-t border-brown-mid mt-8">
+            {userEmail && (
+              <div className="text-[10px] text-cream-light/40 truncate">{userEmail}</div>
+            )}
+            <Link href="/" className="flex items-center gap-2 text-[11px] text-cream-light/40 hover:text-orange">
+              <LogOut className="w-3 h-3" /> voltar ao site
+            </Link>
+            {userEmail && (
+              <form action={signOut}>
+                <button type="submit" className="flex items-center gap-2 text-[11px] text-cream-light/40 hover:text-red-400">
+                  <LogOut className="w-3 h-3" /> sair
+                </button>
+              </form>
+            )}
           </div>
         </aside>
         <main className="flex-1 p-10 overflow-auto">{children}</main>
