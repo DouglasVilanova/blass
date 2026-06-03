@@ -1,47 +1,42 @@
-"use client";
-
-import { useFormState, useFormStatus } from "react-dom";
 import PageHeader from "@/components/gestao/PageHeader";
-import { changePassword } from "./actions";
-import { inputCls } from "@/components/gestao/Field";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { Shield, Info } from "lucide-react";
 
 export default function SecurityPage() {
-  const [state, action] = useFormState(changePassword, null);
-
   return (
     <>
-      <PageHeader title="Segurança" subtitle="Altere a senha de acesso ao painel." />
-      <form action={action} className="max-w-md bg-white border border-brown/10 p-6 space-y-5">
-        <div>
-          <label className="block text-xs tracking-widest text-brown/70 font-semibold uppercase mb-1">Nova senha</label>
-          <input name="newPassword" type="password" required className={inputCls} autoComplete="new-password" />
-          <p className="text-[11px] text-brown/40 mt-1">Mín. 10 caracteres, maiúscula, minúscula e número.</p>
-        </div>
-        <div>
-          <label className="block text-xs tracking-widest text-brown/70 font-semibold uppercase mb-1">Confirmar senha</label>
-          <input name="confirm" type="password" required className={inputCls} autoComplete="new-password" />
-        </div>
-
-        {state?.error && <p className="text-red-600 text-sm">{state.error}</p>}
-        {state?.ok && (
-          <div className="flex items-center gap-2 text-orange text-sm">
-            <CheckCircle2 className="w-4 h-4" /> Senha alterada com sucesso.
+      <PageHeader title="Segurança" subtitle="Informações de acesso ao painel." />
+      <div className="max-w-lg space-y-4">
+        <div className="bg-white border border-brown/10 p-6 space-y-4">
+          <div className="flex items-start gap-3">
+            <Shield className="w-5 h-5 text-orange mt-0.5 flex-shrink-0" />
+            <div>
+              <div className="font-semibold text-brown">Credenciais via variável de ambiente</div>
+              <p className="text-sm text-brown/70 mt-1">
+                E-mail e senha de acesso são definidos pelas variáveis <code className="bg-cream-dark px-1 text-xs">ADMIN_EMAIL</code> e{" "}
+                <code className="bg-cream-dark px-1 text-xs">ADMIN_PASSWORD</code> no arquivo <code className="bg-cream-dark px-1 text-xs">.env.local</code> (desenvolvimento) ou nas configurações do Vercel (produção).
+              </p>
+            </div>
           </div>
-        )}
 
-        <SubmitButton />
-      </form>
+          <div className="flex items-start gap-3 pt-2 border-t border-brown/10">
+            <Info className="w-5 h-5 text-brown/40 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-brown/60 space-y-1">
+              <p>Para alterar a senha:</p>
+              <ol className="list-decimal list-inside space-y-1 pl-1">
+                <li>Atualize <code className="bg-cream-dark px-1 text-xs">ADMIN_PASSWORD</code> no Vercel → Settings → Environment Variables</li>
+                <li>Faça um redeploy ou aguarde o próximo deploy</li>
+              </ol>
+              <p className="pt-1">
+                Requisitos: mín. 10 caracteres, maiúscula, minúscula e número.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-orange/10 border border-orange/30 p-4 text-sm text-brown">
+          <strong>Sessão:</strong> Token HMAC-SHA256 assinado com <code className="bg-cream-dark px-1 text-xs">SESSION_SECRET</code>, válido por 7 dias. Cookie httpOnly + secure em produção.
+        </div>
+      </div>
     </>
-  );
-}
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button type="submit" disabled={pending} className="btn-orange flex items-center gap-2 disabled:opacity-50">
-      {pending && <Loader2 className="w-4 h-4 animate-spin" />}
-      {pending ? "Salvando…" : "Alterar senha"}
-    </button>
   );
 }

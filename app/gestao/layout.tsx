@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Boxes, FileText, Home, Tags, Eye, Code2, LogOut, LayoutGrid, Image as ImageIcon, BarChart3, Sparkles, Megaphone, Phone, Type, Shield } from "lucide-react";
 import { ToastProvider } from "@/components/gestao/Toast";
 import { getSettings } from "@/lib/settings";
-import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+import { verifyToken, COOKIE_NAME } from "@/lib/session";
 import { signOut } from "@/app/gestao/login/actions";
 import type { SiteVisibility } from "@/lib/types";
 
@@ -46,9 +47,8 @@ export default async function GestaoLayout({ children }: { children: React.React
   // Get current user for display (may be null on login page)
   let userEmail: string | null = null;
   try {
-    const sb = createClient();
-    const { data: { user } } = await sb.auth.getUser();
-    userEmail = user?.email ?? null;
+    const token = cookies().get(COOKIE_NAME)?.value;
+    if (token) userEmail = await verifyToken(token);
   } catch { /* no-op */ }
 
   return (
