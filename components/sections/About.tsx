@@ -1,5 +1,4 @@
 import type { SiteSettings } from "@/lib/types";
-import BrandLogo from "@/components/BrandLogo";
 
 function renderBold(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -17,7 +16,12 @@ export default function About({ settings }: { settings: SiteSettings }) {
     <section id="sobre" className="bg-cream py-20">
       <div className="mx-auto max-w-6xl px-6 grid md:grid-cols-[1fr_2fr] gap-10 items-center">
         <div className="flex justify-center md:justify-start">
-          <BrandLogo variant="positivo" signature width={260} height={120} />
+          <img
+            src="/brand/compani.webp"
+            alt="Fachada da fábrica Blass — Flores da Cunha, RS"
+            className="w-full max-w-[420px] h-auto shadow-lg"
+            loading="lazy"
+          />
         </div>
         <div className="space-y-5 text-brown/85 leading-relaxed">
           {settings.about.paragraphs.map((p, i) => (

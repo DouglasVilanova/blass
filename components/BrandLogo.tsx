@@ -21,7 +21,7 @@ export default function BrandLogo({
   priority,
 }: Props) {
   const base = signature ? "logo-assinatura" : "logo";
-  const src = `/brand/${base}-${variant}.png`;
+  const src = `/brand/${base}-${variant}.webp`;
   const alt = signature
     ? "Blass — Iluminação e Componentes"
     : "Blass";

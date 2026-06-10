@@ -1,5 +1,5 @@
 /**
- * Mapa do Brasil — usa PNG oficial em /public/brand/brasil.png.
+ * Mapa do Brasil — usa PNG oficial em /public/brand/brasil.webp.
  *
  * - `variant="outline"` → renderiza o PNG original (contorno laranja oficial)
  * - `variant="fill"` → usa CSS mask para preencher a silhueta com a cor atual
@@ -20,8 +20,8 @@ export default function BrazilOutline({
         aria-hidden
         className={`inline-block bg-current ${className}`}
         style={{
-          WebkitMaskImage: "url(/brand/brasil.png)",
-          maskImage: "url(/brand/brasil.png)",
+          WebkitMaskImage: "url(/brand/brasil.webp)",
+          maskImage: "url(/brand/brasil.webp)",
           WebkitMaskSize: "contain",
           maskSize: "contain",
           WebkitMaskRepeat: "no-repeat",
@@ -35,7 +35,7 @@ export default function BrazilOutline({
 
   return (
     <img
-      src="/brand/brasil.png"
+      src="/brand/brasil.webp"
       alt=""
       aria-hidden
       className={className}
