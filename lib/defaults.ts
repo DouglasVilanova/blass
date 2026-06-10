@@ -35,7 +35,7 @@ export const DEFAULT_STORE: Store = {
       highlight2: "transforma ambientes.",
       ctaLabel: "veja o catálogo completo de soluções",
       ctaHref: "/produtos",
-      image: "/brand/banner.webp",
+      image: "",
     },
     reach: {
       title: "ESTAMOS PRESENTES EM QUASE 2000 REVENDAS",

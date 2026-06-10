@@ -7,15 +7,12 @@ import type { SiteSettings } from "@/lib/types";
  * - Com imagem: renderiza banner full-bleed (assume design self-contained, sem overlay de texto).
  */
 export default function Tagline({ settings }: { settings: SiteSettings["tagline"] }) {
-  // Fallback: usa banner.png oficial quando não há imagem customizada no admin
-  const imageUrl = settings.image || "/brand/banner.webp";
-
-  if (imageUrl) {
+  if (settings.image) {
     return (
       <section className="relative bg-brown-dark overflow-hidden">
         <Link href={settings.ctaHref} className="block group" aria-label={settings.ctaLabel}>
           <img
-            src={imageUrl}
+            src={settings.image}
             alt={`${settings.line1} ${settings.highlight1} ${settings.line2} ${settings.highlight2}`}
             className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.01]"
           />

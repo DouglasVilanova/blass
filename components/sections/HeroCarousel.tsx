@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import BrandLogo from "@/components/BrandLogo";
 
 const ROTATE_MS = 6000;
 
@@ -65,8 +64,17 @@ export default function HeroCarousel({ banners }: { banners: string[] }) {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Slides — todas as imagens montadas, só a ativa visível (fade) */}
-      <div className="relative h-[55vh] min-h-[380px] max-h-[640px] w-full">
+      {/* Slides — imagem fantasma define altura natural; slides empilhados com fade */}
+      <div className="relative w-full">
+        {/* Fantasma: primeira imagem em fluxo normal (invisible) define a altura do container */}
+        <img
+          src={banners[0]}
+          aria-hidden
+          fetchPriority="high"
+          className="w-full h-auto invisible block"
+        />
+
+        {/* Todas as imagens absolutas sobre o fantasma */}
         {banners.map((src, i) => (
           <img
             key={src + i}
@@ -81,35 +89,20 @@ export default function HeroCarousel({ banners }: { banners: string[] }) {
           />
         ))}
 
-        {/* Overlay escuro */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/55" />
-
-        {/* Logo */}
-        <div className="relative h-full flex items-center justify-center text-center px-6">
-          <BrandLogo
-            variant="negativo"
-            signature
-            width={520}
-            height={240}
-            priority
-            className="w-[260px] md:w-[480px] h-auto drop-shadow-2xl"
-          />
-        </div>
-
         {/* Setas */}
         {total > 1 && (
           <>
             <button
               onClick={prev}
               aria-label="Banner anterior"
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-brown/40 hover:bg-orange text-cream-light flex items-center justify-center transition-colors backdrop-blur-sm"
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-brown/40 hover:bg-orange text-cream-light flex items-center justify-center transition-colors backdrop-blur-sm z-10"
             >
               <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
             </button>
             <button
               onClick={next}
               aria-label="Próximo banner"
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-brown/40 hover:bg-orange text-cream-light flex items-center justify-center transition-colors backdrop-blur-sm"
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-brown/40 hover:bg-orange text-cream-light flex items-center justify-center transition-colors backdrop-blur-sm z-10"
             >
               <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
             </button>
