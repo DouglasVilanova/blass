@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { Facebook, Instagram, Linkedin, MapPin, Phone, Mail } from "lucide-react";
 import type { SiteSettings } from "@/lib/types";
+import BrandLogo from "@/components/BrandLogo";
 
 export default function Footer({ settings }: { settings: SiteSettings }) {
   return (
     <footer className="bg-brown-dark text-cream-light/80 text-sm">
       <div className="mx-auto max-w-7xl px-6 py-12 grid md:grid-cols-4 gap-8 items-start">
-        <div className="font-display text-2xl tracking-[0.25em] text-cream-light">
-          BLASS
-          <div className="text-[10px] tracking-[0.3em] text-orange mt-1">ILUMINAÇÃO • COMPONENTES</div>
+        <div>
+          <BrandLogo variant="negativo" signature width={180} height={80} />
         </div>
         <div className="space-y-2 text-xs tracking-widest font-semibold">
           <Link href="/" className="block hover:text-orange">HOME</Link>

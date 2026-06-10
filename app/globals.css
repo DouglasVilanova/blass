@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --brown: #3D2317;
-  --cream: #F4E8C5;
-  --orange: #E87422;
+  --brown: #4F2612;
+  --cream: #FFFADD;
+  --orange: #F0781A;
 }
 
 html { scroll-behavior: smooth; }
@@ -15,11 +15,11 @@ body { background: var(--cream); color: var(--brown); font-family: var(--font-in
   background-image: repeating-linear-gradient(
     45deg,
     transparent 0 10px,
-    rgba(232, 116, 34, 0.06) 10px 11px
+    rgba(240, 120, 26, 0.06) 10px 11px
   ), repeating-linear-gradient(
     -45deg,
     transparent 0 10px,
-    rgba(232, 116, 34, 0.06) 10px 11px
+    rgba(240, 120, 26, 0.06) 10px 11px
   );
 }
 

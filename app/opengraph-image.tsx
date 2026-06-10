@@ -12,7 +12,7 @@ export default function OgImage() {
         style={{
           width: "100%",
           height: "100%",
-          background: "#3D2317",
+          background: "#4F2612",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -21,20 +21,20 @@ export default function OgImage() {
         }}
       >
         {/* Orange accent bar */}
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 6, background: "#E87422" }} />
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 6, background: "#F0781A" }} />
 
-        <div style={{ fontSize: 96, letterSpacing: "0.25em", color: "#F4E8C5", fontWeight: 700 }}>
+        <div style={{ fontSize: 96, letterSpacing: "0.25em", color: "#FFFADD", fontWeight: 700 }}>
           BLASS
         </div>
-        <div style={{ fontSize: 18, letterSpacing: "0.5em", color: "#E87422", marginTop: 12, textTransform: "uppercase" }}>
+        <div style={{ fontSize: 18, letterSpacing: "0.5em", color: "#F0781A", marginTop: 12, textTransform: "uppercase" }}>
           ILUMINAÇÃO • COMPONENTES
         </div>
-        <div style={{ fontSize: 22, color: "#F4E8C5", opacity: 0.6, marginTop: 32, maxWidth: 700, textAlign: "center" }}>
+        <div style={{ fontSize: 22, color: "#FFFADD", opacity: 0.6, marginTop: 32, maxWidth: 700, textAlign: "center" }}>
           26 anos de mercado · 2.000+ revendas · Flores da Cunha — RS
         </div>
 
         {/* Bottom bar */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 6, background: "#E87422" }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 6, background: "#F0781A" }} />
       </div>
     ),
     { ...size }

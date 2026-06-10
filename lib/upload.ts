@@ -73,6 +73,19 @@ export async function deleteImage(path: string): Promise<void> {
   await sb.storage.from(BUCKET).remove([path]);
 }
 
+/**
+ * Delete multiple storage objects by their full public URLs.
+ * Silently ignores URLs that are not from our bucket (external images).
+ */
+export async function deleteImageUrls(urls: string[]): Promise<void> {
+  const paths = urls
+    .map(urlToPath)
+    .filter((p) => p && !p.startsWith("http")); // only bucket paths
+  if (paths.length === 0) return;
+  const sb = createAdminSupabase();
+  await sb.storage.from(BUCKET).remove(paths);
+}
+
 /** Extract storage path from a full public URL */
 export function urlToPath(url: string): string {
   const marker = `/storage/v1/object/public/${BUCKET}/`;

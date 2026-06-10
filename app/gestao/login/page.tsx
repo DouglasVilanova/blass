@@ -10,9 +10,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-brown flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <div className="text-center mb-10">
-          <div className="font-display text-4xl tracking-[0.3em] text-cream-light">BLASS</div>
-          <div className="text-[10px] tracking-[0.4em] text-orange mt-1">GESTÃO</div>
+        <div className="flex flex-col items-center mb-10">
+          <img src="/brand/logo-negativo.png" alt="Blass" width={180} height={52} />
+          <div className="text-[10px] tracking-[0.4em] text-orange mt-3">GESTÃO</div>
         </div>
         <Suspense>
           <LoginForm />

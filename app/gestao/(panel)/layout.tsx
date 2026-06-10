@@ -56,8 +56,8 @@ export default async function GestaoLayout({ children }: { children: React.React
       <div className="min-h-screen flex bg-cream-light text-brown">
         <aside className="w-64 bg-brown text-cream-light flex-shrink-0 sticky top-0 h-screen overflow-y-auto">
           <div className="p-6">
-            <div className="font-display text-2xl tracking-[0.25em]">BLASS</div>
-            <div className="text-[10px] tracking-widest text-orange mt-1">GESTÃO</div>
+            <img src="/brand/logo-negativo.png" alt="Blass" width={130} height={38} />
+            <div className="text-[10px] tracking-widest text-orange mt-2">GESTÃO</div>
           </div>
 
           <nav className="flex flex-col">

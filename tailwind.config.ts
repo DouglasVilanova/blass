@@ -5,26 +5,28 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Cores oficiais da marca Blass (extraídas do Manual de Marca)
         cream: {
-          DEFAULT: "#F4E8C5",
-          light: "#FBF4DC",
-          dark: "#E8DAB0",
+          DEFAULT: "#FFFADD",
+          light: "#FFFCEC",
+          dark: "#F2EBC4",
         },
         brown: {
-          DEFAULT: "#3D2317",
-          mid: "#5E3520",
-          light: "#7A4A33",
-          dark: "#2A1810",
+          DEFAULT: "#4F2612",
+          mid: "#6B3520",
+          light: "#8A4A33",
+          dark: "#3A1B0C",
         },
         orange: {
-          DEFAULT: "#E87422",
-          light: "#F08A3E",
-          dark: "#C25D14",
+          DEFAULT: "#F0781A",
+          light: "#F58E3D",
+          dark: "#C95F12",
         },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         display: ["var(--font-marcellus)", "Georgia", "serif"],
+        brand: ["var(--font-punoer)", "var(--font-marcellus)", "Georgia", "serif"],
       },
       keyframes: {
         marquee: {

@@ -5,7 +5,7 @@ export const DEFAULT_STORE: Store = {
     hero: {
       title: "BLASS",
       subtitle: "Iluminação & Componentes",
-      image: "/images/hero.jpg",
+      image: "",
     },
     about: {
       paragraphs: [
@@ -21,7 +21,7 @@ export const DEFAULT_STORE: Store = {
       subtitle: "Fita COB 3mm",
       body:
         "A tecnologia e o acabamento da fita COB são soluções que vieram para elevar o padrão da iluminação nos projetos!\n\nCom espessura reduzida, proporciona uma aplicação mais discreta e integrada ao móvel, sem interferir no design. Sua luz contínua elimina a marcação dos pontos de LED, garantindo um efeito mais uniforme, limpo e visualmente sofisticado. Versátil, pode ser aplicada com ou sem perfil, adaptando-se a diferentes necessidades de projeto.\n\nEm comparação com fitas tradicionais, oferece um resultado mais sutil e refinado. Ideal para quem busca praticidade na aplicação e excelência no acabamento. Transforme a iluminação em um diferencial que valoriza cada detalhe do ambiente",
-      image: "/images/highlight.jpg",
+      image: "",
     },
     categoriesIntro: {
       title: "",
@@ -34,7 +34,7 @@ export const DEFAULT_STORE: Store = {
       highlight2: "transforma ambientes.",
       ctaLabel: "veja o catálogo completo de soluções",
       ctaHref: "/produtos",
-      image: "/images/kitchen.jpg",
+      image: "",
     },
     reach: {
       title: "ESTAMOS PRESENTES EM QUASE 2000 REVENDAS",

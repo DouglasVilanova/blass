@@ -48,7 +48,8 @@ function rowToCategory(r: any): Category {
 // ────────────────────────────────────────────────────────────
 
 export async function getProducts(publishedOnly = false): Promise<Product[]> {
-  const sb = createClient();
+  // Admin calls (publishedOnly=false) need service-role to bypass RLS and see drafts
+  const sb = publishedOnly ? createClient() : createAdminSupabase();
   let q = sb.from("products").select("*").order("created_at", { ascending: false });
   if (publishedOnly) q = q.eq("published", true);
   const { data } = await q;
@@ -56,9 +57,41 @@ export async function getProducts(publishedOnly = false): Promise<Product[]> {
   return data.map(rowToProduct);
 }
 
-export async function getProductBySlug(slug: string): Promise<Product | null> {
+export async function getProductById(id: string): Promise<Product | null> {
+  const sb = createAdminSupabase();
+  const { data } = await sb.from("products").select("*").eq("id", id).single();
+  return data ? rowToProduct(data) : null;
+}
+
+export async function getFeaturedProducts(limit = 6): Promise<Product[]> {
   const sb = createClient();
-  const { data } = await sb.from("products").select("*").eq("slug", slug).single();
+  const { data } = await sb
+    .from("products")
+    .select("*")
+    .eq("published", true)
+    .eq("featured", true)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (!data) return [];
+  return data.map(rowToProduct);
+}
+
+export async function countFeaturedProducts(excludeId?: string): Promise<number> {
+  const sb = createAdminSupabase();
+  let q = sb
+    .from("products")
+    .select("id", { count: "exact", head: true })
+    .eq("featured", true);
+  if (excludeId) q = q.neq("id", excludeId);
+  const { count } = await q;
+  return count ?? 0;
+}
+
+export async function getProductBySlug(slug: string, category?: string): Promise<Product | null> {
+  const sb = createClient();
+  let q = sb.from("products").select("*").eq("slug", slug).eq("published", true);
+  if (category) q = q.eq("category", category);
+  const { data } = await q.single();
   return data ? rowToProduct(data) : null;
 }
 

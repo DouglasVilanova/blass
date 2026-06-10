@@ -4,15 +4,20 @@ import CategoryCards from "@/components/sections/CategoryCards";
 import Stats from "@/components/sections/Stats";
 import Tagline from "@/components/sections/Tagline";
 import Highlight from "@/components/sections/Highlight";
+import FeaturedCarousel from "@/components/sections/FeaturedCarousel";
 import ReachCTA from "@/components/sections/ReachCTA";
 import { readStore } from "@/lib/store";
 import { getSettings } from "@/lib/settings";
+import { getFeaturedProducts } from "@/lib/db";
 
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const store = await readStore();
-  const settings = await getSettings();
+  const [store, settings, featured] = await Promise.all([
+    readStore(),
+    getSettings(),
+    getFeaturedProducts(6),
+  ]);
   const v = settings.visibility;
 
   return (
@@ -22,7 +27,11 @@ export default async function HomePage() {
       <CategoryCards categories={store.categories} intro={settings.categoriesIntro} />
       {v.stats && <Stats settings={settings} />}
       {v.tagline && <Tagline settings={settings.tagline} />}
-      {v.highlight && <Highlight settings={settings} />}
+      {v.highlight && (
+        featured.length > 0
+          ? <FeaturedCarousel products={featured} tag={settings.highlight.tag} />
+          : <Highlight settings={settings} />
+      )}
       {v.reach && <ReachCTA settings={settings} />}
     </>
   );

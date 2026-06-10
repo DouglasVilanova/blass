@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Facebook, Instagram, Linkedin, Phone } from "lucide-react";
 import type { SiteSettings } from "@/lib/types";
+import BrandLogo from "@/components/BrandLogo";
 
 const NAV = [
   { label: "SOBRE", href: "/#sobre" },
@@ -15,7 +16,9 @@ export default function Header({ settings }: { settings: SiteSettings }) {
   return (
     <header className="bg-brown text-cream-light text-sm">
       <div className="mx-auto max-w-7xl px-6 h-14 flex items-center justify-between">
-        <Link href="/" className="font-display text-xl tracking-[0.25em]">BLASS</Link>
+        <Link href="/" className="flex items-center" aria-label="Início — Blass">
+          <BrandLogo variant="negativo" width={110} height={32} priority />
+        </Link>
         <nav className="hidden lg:flex items-center gap-7 text-[12px] tracking-wider">
           {NAV.map((n) => (
             <Link key={n.href + n.label} href={n.href} className="hover:text-orange transition-colors">

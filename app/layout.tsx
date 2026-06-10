@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
 import { Inter, Marcellus } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import SeoHeadTags from "@/components/SeoHeadTags";
 import { getSettings } from "@/lib/settings";
+import { ConfirmProvider } from "@/components/gestao/ConfirmDialog";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const marcellus = Marcellus({ subsets: ["latin"], weight: "400", variable: "--font-marcellus", display: "swap" });
+
+// Fonte oficial da marca Blass — Punoer (do Manual de Marca)
+const punoer = localFont({
+  src: "../public/fonts/Punoer.otf",
+  variable: "--font-punoer",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -51,13 +60,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const settings = await getSettings();
 
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${marcellus.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${marcellus.variable} ${punoer.variable}`}>
       <body>
         {settings.seo.head && <SeoHeadTags html={settings.seo.head} />}
         {settings.seo.bodyStart && (
           <div dangerouslySetInnerHTML={{ __html: settings.seo.bodyStart }} />
         )}
-        {children}
+        <ConfirmProvider>{children}</ConfirmProvider>
       </body>
     </html>
   );

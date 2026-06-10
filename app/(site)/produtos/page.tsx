@@ -3,6 +3,7 @@ import { getCategories, getProducts } from "@/lib/db";
 import type { Product } from "@/lib/types";
 import ProductCard from "@/components/site/ProductCard";
 import ProductFilters from "@/components/site/ProductFilters";
+import { getAdminEmail } from "@/lib/session-server";
 import { LayoutGrid, List } from "lucide-react";
 
 export const revalidate = 0;
@@ -73,10 +74,12 @@ function filterProducts(products: Product[], sp: PageProps["searchParams"]): Pro
 }
 
 export default async function ProductsPage({ searchParams }: PageProps) {
-  const [allProducts, categories] = await Promise.all([
+  const [allProducts, categories, adminEmail] = await Promise.all([
     getProducts(true), // published only
     getCategories(),
+    getAdminEmail(),
   ]);
+  const isAdmin = !!adminEmail;
 
   const filtered = filterProducts(allProducts, searchParams);
 
@@ -167,7 +170,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
             ) : (
               <div className={`grid gap-4 ${view === "list" ? "grid-cols-1" : "sm:grid-cols-2 xl:grid-cols-3"}`}>
                 {filtered.map((p) => (
-                  <ProductCard key={p.id} product={p} category={catMap[p.category]} />
+                  <ProductCard key={p.id} product={p} category={catMap[p.category]} isAdmin={isAdmin} />
                 ))}
               </div>
             )}

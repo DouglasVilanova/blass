@@ -1,19 +1,27 @@
 import Link from "next/link";
 import { Star } from "lucide-react";
 import type { Category, Product } from "@/lib/types";
+import AdminProductOverlay from "./AdminProductOverlay";
 
 export default function ProductCard({
   product,
   category,
+  isAdmin = false,
 }: {
   product: Product;
   category?: Category;
+  isAdmin?: boolean;
 }) {
   return (
     <Link
       href={`/produtos/${product.category}/${product.slug}`}
-      className="group flex flex-col bg-white border border-brown/10 hover:border-orange hover:shadow-lg transition-all duration-200"
+      className="group relative flex flex-col bg-white border border-brown/10 hover:border-orange hover:shadow-lg transition-all duration-200"
     >
+      {/* Admin overlay — only visible on hover when admin */}
+      {isAdmin && (
+        <AdminProductOverlay productId={product.id} productName={product.name} />
+      )}
+
       {/* Imagem */}
       <div className="relative aspect-square overflow-hidden bg-cream-dark">
         {product.image ? (
