@@ -1,4 +1,5 @@
 import type { SiteSettings } from "@/lib/types";
+import BrazilOutline from "@/components/BrazilOutline";
 
 export default function Stats({ settings }: { settings: SiteSettings }) {
   return (
@@ -13,9 +14,7 @@ export default function Stats({ settings }: { settings: SiteSettings }) {
           <div className="text-sm mt-1">revendas</div>
         </div>
         <div className="col-span-2 flex items-center justify-center gap-4">
-          <svg viewBox="0 0 200 220" className="w-24 h-28 fill-orange" aria-hidden>
-            <path d="M50 30 L150 25 L170 80 L155 130 L170 175 L120 200 L70 195 L40 160 L25 110 L40 65 Z" />
-          </svg>
+          <BrazilOutline className="w-24 h-28 text-orange" variant="fill" />
           <p className="font-semibold text-brown leading-tight max-w-[180px]">{settings.stats.coverage}</p>
         </div>
       </div>

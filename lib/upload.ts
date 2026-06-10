@@ -14,11 +14,24 @@ const ALLOWED_MIME = new Set([
   "image/svg+xml",
 ]);
 
-const MAX_INPUT_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_INPUT_BYTES = 15 * 1024 * 1024; // 15 MB input
+
+/**
+ * Per-folder optimization profile.
+ * - "site": banners de Hero/Tagline/Destaque — precisam de mais resolução
+ *   pra full-bleed em telas 1920px+ sem perder qualidade.
+ * - "products" + "blog": cards e thumbnails — 1600px é suficiente.
+ */
+const PROFILE: Record<"products" | "blog" | "site", { width: number; quality: number }> = {
+  site: { width: 2400, quality: 90 },    // full-bleed banners
+  products: { width: 1600, quality: 85 }, // product cards + detail
+  blog: { width: 1600, quality: 85 },     // blog cover + content
+};
 
 /**
  * Optimize image via Sharp → WebP, then upload to Supabase Storage.
  * SVG files are uploaded as-is (no raster conversion).
+ * Aspect ratio is always preserved — never stretches.
  */
 export async function uploadImage(
   file: File,
@@ -28,7 +41,7 @@ export async function uploadImage(
     throw new Error(`Tipo não permitido: ${file.type}`);
   }
   if (file.size > MAX_INPUT_BYTES) {
-    throw new Error("Arquivo maior que 10 MB");
+    throw new Error("Arquivo maior que 15 MB");
   }
 
   const arrayBuffer = await file.arrayBuffer();
@@ -44,10 +57,14 @@ export async function uploadImage(
     contentType = "image/svg+xml";
     ext = "svg";
   } else {
-    // Raster: convert to WebP, max 1400px wide, quality 82
+    const { width, quality } = PROFILE[folder];
+    // Raster: convert to WebP with per-folder profile.
+    // `withoutEnlargement: true` = nunca aumenta (preserva qualidade original se menor).
+    // `fit: "inside"` + sem `height` = preserva aspect ratio, nunca estica.
     outputBuffer = await sharp(inputBuffer)
-      .resize({ width: 1400, withoutEnlargement: true })
-      .webp({ quality: 82 })
+      .rotate() // respeita EXIF orientation
+      .resize({ width, withoutEnlargement: true, fit: "inside" })
+      .webp({ quality, effort: 5 }) // effort 5 = melhor compressão sem ficar lento
       .toBuffer();
     contentType = "image/webp";
     ext = "webp";

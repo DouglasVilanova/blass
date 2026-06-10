@@ -6,6 +6,7 @@ export const DEFAULT_STORE: Store = {
       title: "BLASS",
       subtitle: "Iluminação & Componentes",
       image: "",
+      banners: [],
     },
     about: {
       paragraphs: [

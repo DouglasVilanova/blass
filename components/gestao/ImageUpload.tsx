@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Upload, X, Loader2, ImageIcon, RotateCw } from "lucide-react";
 
 type Aspect = "square" | "wide" | "portrait" | "ultrawide";
@@ -39,6 +39,11 @@ export default function ImageUpload({
   const [preview, setPreview] = useState<string | null>(null);
   const [broken, setBroken] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Reset broken state whenever the value changes (new upload, manual change, etc.)
+  useEffect(() => {
+    setBroken(false);
+  }, [value]);
 
   async function handleFile(file: File) {
     setError(null);

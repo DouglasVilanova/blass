@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { SiteSettings } from "@/lib/types";
+import BrazilOutline from "@/components/BrazilOutline";
 
 export default function ReachCTA({ settings }: { settings: SiteSettings }) {
   const r = settings.reach;
@@ -13,9 +14,7 @@ export default function ReachCTA({ settings }: { settings: SiteSettings }) {
           <Link href={r.ctaHref} className="btn-orange mt-8">{r.ctaLabel}</Link>
         </div>
         <div className="flex justify-center md:justify-end">
-          <svg viewBox="0 0 200 220" className="w-64 h-72 stroke-orange fill-none" strokeWidth={2} aria-hidden>
-            <path d="M50 30 L150 25 L170 80 L155 130 L170 175 L120 200 L70 195 L40 160 L25 110 L40 65 Z" />
-          </svg>
+          <BrazilOutline className="w-64 h-72" variant="outline" />
         </div>
       </div>
     </section>

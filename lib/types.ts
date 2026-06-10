@@ -51,7 +51,7 @@ export type SiteSeo = {
 };
 
 export type SiteSettings = {
-  hero: { title: string; subtitle: string; image: string };
+  hero: { title: string; subtitle: string; image: string; banners?: string[] };
   about: { paragraphs: string[] };
   categoriesIntro: { title: string; subtitle: string };
   stats: { years: string; resellers: string; coverage: string };
