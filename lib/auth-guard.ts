@@ -14,11 +14,3 @@ export async function requireAdmin(): Promise<string> {
   if (!email) redirect("/gestao/login");
   return email;
 }
-
-export function validatePassword(password: string): string | null {
-  if (password.length < 10) return "Mínimo 10 caracteres.";
-  if (!/[A-Z]/.test(password)) return "Deve conter ao menos uma letra maiúscula.";
-  if (!/[a-z]/.test(password)) return "Deve conter ao menos uma letra minúscula.";
-  if (!/[0-9]/.test(password)) return "Deve conter ao menos um número.";
-  return null;
-}
