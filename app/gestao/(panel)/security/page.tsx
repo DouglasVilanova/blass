@@ -36,6 +36,22 @@ export default function SecurityPage() {
         <div className="bg-orange/10 border border-orange/30 p-4 text-sm text-brown">
           <strong>Sessão:</strong> Token HMAC-SHA256 assinado com <code className="bg-cream-dark px-1 text-xs">SESSION_SECRET</code>, válido por 7 dias. Cookie httpOnly + secure em produção.
         </div>
+
+        <div className="bg-white border border-brown/10 p-6">
+          <div className="flex items-start gap-3">
+            <Shield className="w-5 h-5 text-orange mt-0.5 flex-shrink-0" />
+            <div>
+              <div className="font-semibold text-brown">Proteções ativas</div>
+              <ul className="text-sm text-brown/70 mt-2 space-y-1 list-disc list-inside">
+                <li>Login com limite de 5 tentativas / 15 min e comparação em tempo constante</li>
+                <li>Upload de imagens restrito ao admin logado</li>
+                <li>Imagens rasterizadas para WebP (remove scripts/metadados)</li>
+                <li>Escrita no banco e no storage só via service role (server-side)</li>
+                <li>Headers: CSP, HSTS, X-Content-Type-Options, frame-ancestors</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

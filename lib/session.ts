@@ -57,12 +57,33 @@ export async function verifyToken(token: string): Promise<string | null> {
   }
 }
 
+/**
+ * Comparação em tempo constante para evitar timing attacks no login.
+ * Usa HMAC dos dois lados → mesmo tamanho de buffer independente do input,
+ * sem early-return por caractere.
+ */
+export async function timingSafeEqual(a: string, b: string): Promise<boolean> {
+  const key = await getKey(secret());
+  const enc = new TextEncoder();
+  const [ha, hb] = await Promise.all([
+    crypto.subtle.sign("HMAC", key, enc.encode(a)),
+    crypto.subtle.sign("HMAC", key, enc.encode(b)),
+  ]);
+  const va = new Uint8Array(ha);
+  const vb = new Uint8Array(hb);
+  let diff = 0;
+  for (let i = 0; i < va.length; i++) diff |= va[i] ^ vb[i];
+  return diff === 0;
+}
+
 export function cookieOptions(maxAge?: number) {
   return {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
-    path: "/gestao",
+    // Path "/" para que o cookie acompanhe também /api/upload (fora de /gestao).
+    // Protegido por httpOnly + secure + sameSite=lax.
+    path: "/",
     maxAge: maxAge ?? SESSION_DAYS * 24 * 60 * 60,
   };
 }

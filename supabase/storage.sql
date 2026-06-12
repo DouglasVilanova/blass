@@ -10,7 +10,7 @@ VALUES (
   'site-images',
   true,
   10485760,
-  ARRAY['image/jpeg','image/png','image/webp','image/gif','image/avif','image/svg+xml']
+  ARRAY['image/jpeg','image/png','image/webp','image/gif','image/avif']
 )
 ON CONFLICT (id) DO NOTHING;
 
@@ -20,18 +20,9 @@ DROP POLICY IF EXISTS "service upload site-images"  ON storage.objects;
 DROP POLICY IF EXISTS "service update site-images"  ON storage.objects;
 DROP POLICY IF EXISTS "service delete site-images"  ON storage.objects;
 
+-- Apenas leitura pública. Uploads/updates/deletes são feitos pelo
+-- service_role no servidor, que IGNORA RLS — não precisa (e não deve ter)
+-- policy de escrita, senão a anon key conseguiria gravar no bucket.
 CREATE POLICY "public read site-images"
   ON storage.objects FOR SELECT
-  USING (bucket_id = 'site-images');
-
-CREATE POLICY "service upload site-images"
-  ON storage.objects FOR INSERT
-  WITH CHECK (bucket_id = 'site-images');
-
-CREATE POLICY "service update site-images"
-  ON storage.objects FOR UPDATE
-  USING (bucket_id = 'site-images');
-
-CREATE POLICY "service delete site-images"
-  ON storage.objects FOR DELETE
   USING (bucket_id = 'site-images');

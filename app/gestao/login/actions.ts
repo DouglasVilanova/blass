@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { cookies, headers } from "next/headers";
 import { rateLimit } from "@/lib/rate-limit";
-import { signToken, COOKIE_NAME, cookieOptions } from "@/lib/session";
+import { signToken, COOKIE_NAME, cookieOptions, timingSafeEqual } from "@/lib/session";
 
 export async function signIn(
   _prev: { error?: string } | null,
@@ -28,7 +28,10 @@ export async function signIn(
     return { error: "Credenciais de admin não configuradas no servidor." };
   }
 
-  if (email !== adminEmail || password !== adminPassword) {
+  // Comparação em tempo constante nos dois campos (evita timing attack)
+  const emailOk = await timingSafeEqual(email, adminEmail);
+  const passOk = await timingSafeEqual(password, adminPassword);
+  if (!emailOk || !passOk) {
     return { error: "E-mail ou senha incorretos." };
   }
 

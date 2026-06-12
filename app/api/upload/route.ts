@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { uploadImage } from "@/lib/upload";
+import { verifyToken, COOKIE_NAME } from "@/lib/session";
 
 export const runtime = "nodejs"; // Sharp needs Node.js runtime
 
 export async function POST(req: NextRequest) {
   try {
+    // Auth: somente admin logado pode subir imagens
+    const token = cookies().get(COOKIE_NAME)?.value;
+    const email = token ? await verifyToken(token) : null;
+    if (!email) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
+
     const form = await req.formData();
     const file = form.get("file");
     const folder = (form.get("folder") as string | null) ?? "products";

@@ -5,13 +5,14 @@ export type UploadResult = { url: string; path: string };
 
 const BUCKET = "site-images";
 
+// SVG omitido de propósito: pode conter <script> (XSS armazenado se aberto direto).
+// Todo upload é rasterizado para WebP, então vetor não traria ganho mesmo.
 const ALLOWED_MIME = new Set([
   "image/jpeg",
   "image/png",
   "image/webp",
   "image/gif",
   "image/avif",
-  "image/svg+xml",
 ]);
 
 const MAX_INPUT_BYTES = 15 * 1024 * 1024; // 15 MB input
@@ -47,28 +48,18 @@ export async function uploadImage(
   const arrayBuffer = await file.arrayBuffer();
   const inputBuffer = Buffer.from(arrayBuffer);
 
-  let outputBuffer: Buffer;
-  let contentType: string;
-  let ext: string;
-
-  if (file.type === "image/svg+xml") {
-    // SVG: keep as-is (vectors don't benefit from raster conversion)
-    outputBuffer = inputBuffer;
-    contentType = "image/svg+xml";
-    ext = "svg";
-  } else {
-    const { width, quality } = PROFILE[folder];
-    // Raster: convert to WebP with per-folder profile.
-    // `withoutEnlargement: true` = nunca aumenta (preserva qualidade original se menor).
-    // `fit: "inside"` + sem `height` = preserva aspect ratio, nunca estica.
-    outputBuffer = await sharp(inputBuffer)
-      .rotate() // respeita EXIF orientation
-      .resize({ width, withoutEnlargement: true, fit: "inside" })
-      .webp({ quality, effort: 5 }) // effort 5 = melhor compressão sem ficar lento
-      .toBuffer();
-    contentType = "image/webp";
-    ext = "webp";
-  }
+  const { width, quality } = PROFILE[folder];
+  // Sempre rasteriza para WebP — isto também neutraliza payloads embutidos
+  // (EXIF/metadados maliciosos) e normaliza o formato de saída.
+  // `withoutEnlargement: true` = nunca aumenta (preserva qualidade original se menor).
+  // `fit: "inside"` + sem `height` = preserva aspect ratio, nunca estica.
+  const outputBuffer = await sharp(inputBuffer)
+    .rotate() // respeita EXIF orientation
+    .resize({ width, withoutEnlargement: true, fit: "inside" })
+    .webp({ quality, effort: 5 }) // effort 5 = melhor compressão sem ficar lento
+    .toBuffer();
+  const contentType = "image/webp";
+  const ext = "webp";
 
   const timestamp = Date.now();
   const random = Math.random().toString(36).slice(2, 7);
