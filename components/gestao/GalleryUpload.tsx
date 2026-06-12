@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Plus, X, Loader2, ArrowLeft, ArrowRight, ImageIcon, Star } from "lucide-react";
+import { compressImage } from "@/lib/client-image";
 
 type Props = {
   value: string[];
@@ -15,12 +16,19 @@ export default function GalleryUpload({ value, onChange, folder = "products" }: 
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function uploadFile(file: File) {
+    // Comprime no browser para não estourar o limite de 4.5 MB da Vercel (HTTP 413)
+    const compressed = await compressImage(file);
     const fd = new FormData();
-    fd.append("file", file);
+    fd.append("file", compressed);
     fd.append("folder", folder);
     const res = await fetch("/api/upload", { method: "POST", body: fd });
+    if (!res.ok) {
+      // Resposta de erro pode não ser JSON (ex: 413 da borda devolve texto)
+      const msg = await res.text().catch(() => "");
+      if (res.status === 413) throw new Error("Imagem muito grande. Tente uma foto menor.");
+      throw new Error(msg && msg.length < 200 ? msg : `Erro no upload (${res.status})`);
+    }
     const json = await res.json();
-    if (!res.ok) throw new Error(json.error ?? "Erro no upload");
     return json.url as string;
   }
 
@@ -187,7 +195,7 @@ export default function GalleryUpload({ value, onChange, folder = "products" }: 
 
       {error && <p className="text-red-600 text-xs">{error}</p>}
       <p className="text-[11px] text-brown/40">
-        Selecione múltiplas fotos de uma vez (Ctrl/Cmd + clique). Formatos: JPG, PNG, WebP, SVG. Otimização automática para WebP.
+        Selecione múltiplas fotos de uma vez (Ctrl/Cmd + clique). Formatos: JPG, PNG, WebP. Otimização automática para WebP.
       </p>
     </div>
   );
