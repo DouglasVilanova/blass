@@ -35,6 +35,9 @@ export async function signIn(
     return { error: "E-mail ou senha incorretos." };
   }
 
+  // Remove eventual cookie legado (path "/gestao") antes de setar o novo (path "/")
+  cookies().set(COOKIE_NAME, "", { ...cookieOptions(0), path: "/gestao" });
+
   const token = await signToken(email);
   cookies().set(COOKIE_NAME, token, cookieOptions());
 
@@ -42,6 +45,10 @@ export async function signIn(
 }
 
 export async function signOut() {
+  // Limpa o cookie no path atual ("/") e também no path legado ("/gestao"),
+  // senão uma sessão antiga (criada antes da mudança de path) fica presa e
+  // continua autenticando o middleware sem alcançar /api/upload.
   cookies().set(COOKIE_NAME, "", cookieOptions(0));
+  cookies().set(COOKIE_NAME, "", { ...cookieOptions(0), path: "/gestao" });
   redirect("/gestao/login");
 }
