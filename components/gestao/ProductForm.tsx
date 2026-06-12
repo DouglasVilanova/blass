@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { Plus, X, Loader2 } from "lucide-react";
 import { Field, inputCls } from "./Field";
 import GalleryUpload from "./GalleryUpload";
+import AttributesEditor from "./AttributesEditor";
 import { useToast } from "./Toast";
 import { createCategoryInline, createSubcategoryInline } from "@/app/gestao/(panel)/actions";
-import type { Category, Product } from "@/lib/types";
+import type { Category, Product, ProductAttribute } from "@/lib/types";
 
 type Props = {
   action: (formData: FormData) => Promise<void>;
@@ -40,8 +41,12 @@ export default function ProductForm({ action, categories: initialCategories, ini
     const rest = initial?.gallery ?? [];
     return [...cover, ...rest];
   });
-  const [tags, setTags] = useState<string[]>(initial?.tags ?? []);
-  const [tagInput, setTagInput] = useState("");
+  // Características estruturadas — migra tags legadas para grupo "Características"
+  const [attributes, setAttributes] = useState<ProductAttribute[]>(() => {
+    if (initial?.attributes && initial.attributes.length > 0) return initial.attributes;
+    if (initial?.tags && initial.tags.length > 0) return [{ name: "Características", values: initial.tags }];
+    return [];
+  });
   const [pending, setPending] = useState(false);
   const { push } = useToast();
   const router = useRouter();
@@ -100,7 +105,7 @@ export default function ProductForm({ action, categories: initialCategories, ini
       fd.set("gallery", JSON.stringify(images.slice(1)));
       fd.set("category", catSlug);
       fd.set("subcategory", subSlug);
-      fd.set("tags", JSON.stringify(tags));
+      fd.set("attributes", JSON.stringify(attributes));
       await action(fd);
     } catch (err: any) {
       push(err?.message ?? "Erro ao salvar", "error");
@@ -264,45 +269,14 @@ export default function ProductForm({ action, categories: initialCategories, ini
         </Field>
       </section>
 
-      {/* Tags */}
+      {/* Características */}
       <section className="bg-white border border-brown/10 p-6 space-y-4">
-        <h2 className="font-display text-lg text-brown">Características / Tags</h2>
-        <p className="text-xs text-brown/50">Use para cor, material, tamanho, tipo… Ex: "Preto", "Alumínio", "3mm". Aparecem como filtro na loja.</p>
-        <div className="flex flex-wrap gap-2">
-          {tags.map((t) => (
-            <span key={t} className="flex items-center gap-1.5 text-xs bg-cream-dark border border-brown/20 px-2.5 py-1">
-              {t}
-              <button type="button" onClick={() => setTags(tags.filter((x) => x !== t))} className="text-brown/40 hover:text-red-600">×</button>
-            </span>
-          ))}
-        </div>
-        <div className="flex gap-2 max-w-sm">
-          <input
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={(e) => {
-              if ((e.key === "Enter" || e.key === ",") && tagInput.trim()) {
-                e.preventDefault();
-                const t = tagInput.trim().replace(/,$/, "");
-                if (!tags.includes(t)) setTags([...tags, t]);
-                setTagInput("");
-              }
-            }}
-            placeholder="Digite e pressione Enter"
-            className="border border-brown/20 px-3 py-2 text-sm flex-1 focus:outline-none focus:border-orange"
-          />
-          <button
-            type="button"
-            onClick={() => {
-              const t = tagInput.trim();
-              if (t && !tags.includes(t)) setTags([...tags, t]);
-              setTagInput("");
-            }}
-            className="btn-outline text-xs px-4"
-          >
-            Adicionar
-          </button>
-        </div>
+        <h2 className="font-display text-lg text-brown">Características</h2>
+        <p className="text-xs text-brown/50">
+          Crie grupos como "Material", "Cor", "Tamanho" e adicione os valores de cada um.
+          Ex: Material → Alumínio, Aço. Aparecem como filtros na loja e na página do produto.
+        </p>
+        <AttributesEditor value={attributes} onChange={setAttributes} />
       </section>
 
       {/* Opções */}

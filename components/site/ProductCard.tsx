@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Star } from "lucide-react";
 import type { Category, Product } from "@/lib/types";
+import { productAttrs } from "@/lib/attributes";
 import AdminProductOverlay from "./AdminProductOverlay";
 
 export default function ProductCard({
@@ -12,6 +13,7 @@ export default function ProductCard({
   category?: Category;
   isAdmin?: boolean;
 }) {
+  const attrValues = productAttrs(product).flatMap((a) => a.values);
   return (
     <Link
       href={`/produtos/${product.category}/${product.slug}`}
@@ -57,9 +59,9 @@ export default function ProductCard({
             {product.shortDescription}
           </p>
         )}
-        {product.tags && product.tags.length > 0 && (
+        {attrValues.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-1">
-            {product.tags.slice(0, 3).map((tag) => (
+            {attrValues.slice(0, 3).map((tag) => (
               <span key={tag} className="text-[10px] px-2 py-0.5 bg-cream-dark text-brown/60">
                 {tag}
               </span>

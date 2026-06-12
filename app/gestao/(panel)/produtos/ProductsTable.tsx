@@ -6,6 +6,7 @@ import { Pencil, Trash2, Search, X, Star } from "lucide-react";
 import { deleteProduct, deleteProducts } from "@/app/gestao/(panel)/actions";
 import { useToast } from "@/components/gestao/Toast";
 import { useConfirm } from "@/components/gestao/ConfirmDialog";
+import { productAttrs } from "@/lib/attributes";
 import type { Category, Product } from "@/lib/types";
 
 const PAGE_SIZE = 30;
@@ -45,7 +46,9 @@ export default function ProductsTable({
           p.name.toLowerCase().includes(q) ||
           p.shortDescription?.toLowerCase().includes(q) ||
           p.description?.toLowerCase().includes(q) ||
-          p.tags?.some((t) => t.toLowerCase().includes(q))
+          productAttrs(p).some(
+            (a) => a.name.toLowerCase().includes(q) || a.values.some((v) => v.toLowerCase().includes(q))
+          )
       );
     }
 

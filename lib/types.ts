@@ -7,6 +7,9 @@ export type Category = {
   subcategories: Subcategory[];
 };
 
+/** Grupo de característica: nome (ex: "Material") + 1+ valores (ex: ["Alumínio", "Aço"]) */
+export type ProductAttribute = { name: string; values: string[] };
+
 export type Product = {
   id: string;
   slug: string;
@@ -17,7 +20,9 @@ export type Product = {
   description?: string;    // long, html or markdown
   image?: string;
   gallery?: string[];
-  tags?: string[];         // e.g. ["Preto", "Alumínio", "3mm"]
+  /** @deprecated legado — migrado para attributes */
+  tags?: string[];
+  attributes?: ProductAttribute[];
   featured?: boolean;
   published?: boolean;
   createdAt: string;

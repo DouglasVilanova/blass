@@ -4,6 +4,7 @@ import type { Product } from "@/lib/types";
 import ProductCard from "@/components/site/ProductCard";
 import ProductFilters from "@/components/site/ProductFilters";
 import { getAdminEmail } from "@/lib/session-server";
+import { parseAttrParams, matchesAttrSelection, buildFacets } from "@/lib/attributes";
 import { LayoutGrid, List } from "lucide-react";
 
 export const revalidate = 0;
@@ -14,7 +15,7 @@ type PageProps = {
     q?: string;
     cat?: string;
     sub?: string | string[];
-    tag?: string | string[];
+    attr?: string | string[];
     featured?: string;
     sort?: string;
     view?: string;
@@ -47,10 +48,9 @@ function filterProducts(products: Product[], sp: PageProps["searchParams"]): Pro
   const subs = arr(sp.sub);
   if (subs.length > 0) out = out.filter((p) => p.subcategory && subs.includes(p.subcategory));
 
-  // Tags
-  const tags = arr(sp.tag);
-  if (tags.length > 0)
-    out = out.filter((p) => tags.every((t) => p.tags?.includes(t)));
+  // Características: mesmo grupo = OU, grupos diferentes = E
+  const attrSel = parseAttrParams(arr(sp.attr));
+  if (attrSel.size > 0) out = out.filter((p) => matchesAttrSelection(p, attrSel));
 
   // Featured
   if (sp.featured === "1") out = out.filter((p) => p.featured);
@@ -83,8 +83,12 @@ export default async function ProductsPage({ searchParams }: PageProps) {
 
   const filtered = filterProducts(allProducts, searchParams);
 
-  // Collect all unique tags across products
-  const allTags = [...new Set(allProducts.flatMap((p) => p.tags ?? []))].sort();
+  // Facetas: calculadas sobre produtos que batem com os demais filtros
+  // (categoria/sub/busca/destaque), ignorando a seleção de características —
+  // assim os valores disponíveis refletem o contexto atual sem se auto-excluir.
+  const facetBase = filterProducts(allProducts, { ...searchParams, attr: undefined });
+  const facets = buildFacets(facetBase);
+  const attrSelection = parseAttrParams(arr(searchParams.attr));
 
   const catMap = Object.fromEntries(categories.map((c) => [c.slug, c]));
   const view = searchParams.view ?? "grid";
@@ -116,7 +120,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
             <Suspense>
               <ProductFilters
                 categories={categories}
-                allTags={allTags}
+                facets={facets}
                 total={allProducts.length}
                 filtered={filtered.length}
               />
@@ -146,11 +150,13 @@ export default async function ProductsPage({ searchParams }: PageProps) {
                     </span>
                   );
                 })}
-                {arr(searchParams.tag).map((t) => (
-                  <span key={t} className="flex items-center gap-1 text-xs bg-brown/10 text-brown px-2 py-1">
-                    {t}
-                  </span>
-                ))}
+                {[...attrSelection.entries()].flatMap(([name, vals]) =>
+                  vals.map((v) => (
+                    <span key={`${name}:${v}`} className="flex items-center gap-1 text-xs bg-brown/10 text-brown px-2 py-1">
+                      <span className="text-brown/50">{name}:</span> {v}
+                    </span>
+                  ))
+                )}
               </div>
             </div>
 

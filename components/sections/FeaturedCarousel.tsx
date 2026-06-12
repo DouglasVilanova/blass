@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import type { Product } from "@/lib/types";
+import { productAttrs } from "@/lib/attributes";
 
 export default function FeaturedCarousel({
   products,
@@ -43,6 +44,7 @@ export default function FeaturedCarousel({
   if (total === 0) return null;
 
   const current = products[idx];
+  const currentAttrValues = productAttrs(current).flatMap((a) => a.values);
 
   return (
     <section
@@ -67,9 +69,9 @@ export default function FeaturedCarousel({
         <div className="grid md:grid-cols-2 gap-12 items-center min-h-[500px]">
           <div className="space-y-5">
             <div className="border-t border-brown/30 pt-6">
-              {current.tags && current.tags.length > 0 && (
+              {currentAttrValues.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mb-3">
-                  {current.tags.slice(0, 3).map((t) => (
+                  {currentAttrValues.slice(0, 3).map((t) => (
                     <span key={t} className="text-[10px] tracking-widest text-orange uppercase font-semibold">
                       {t}
                     </span>

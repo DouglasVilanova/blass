@@ -6,6 +6,7 @@ import { getSettings } from "@/lib/settings";
 import { getAdminEmail } from "@/lib/session-server";
 import ProductGallery from "@/components/site/ProductGallery";
 import AdminProductBar from "@/components/site/AdminProductBar";
+import { productAttrs } from "@/lib/attributes";
 
 type Props = { params: { categoria: string; slug: string } };
 
@@ -42,6 +43,7 @@ export default async function ProductDetail({ params }: Props) {
     ...(product.image ? [product.image] : []),
     ...(product.gallery ?? []),
   ];
+  const attrs = productAttrs(product);
 
   return (
     <div className="bg-cream min-h-screen">
@@ -82,10 +84,17 @@ export default async function ProductDetail({ params }: Props) {
               )}
             </div>
 
-            {product.tags && product.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {product.tags.map((tag) => (
-                  <span key={tag} className="text-xs px-3 py-1 border border-brown/20 text-brown/70">{tag}</span>
+            {attrs.length > 0 && (
+              <div className="border border-brown/10 divide-y divide-brown/10">
+                {attrs.map((a) => (
+                  <div key={a.name} className="flex text-sm">
+                    <div className="w-32 flex-shrink-0 bg-cream-dark/50 px-3 py-2 text-xs tracking-wide text-brown/60 font-semibold uppercase">
+                      {a.name}
+                    </div>
+                    <div className="px-3 py-2 text-brown/80 flex flex-wrap gap-x-2 gap-y-1">
+                      {a.values.join(", ")}
+                    </div>
+                  </div>
                 ))}
               </div>
             )}

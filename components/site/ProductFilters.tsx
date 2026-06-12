@@ -4,22 +4,23 @@ import { useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, X, SlidersHorizontal } from "lucide-react";
 import type { Category } from "@/lib/types";
+import { encodeAttrParam, type Facet } from "@/lib/attributes";
 
 type Props = {
   categories: Category[];
-  allTags: string[];
+  facets: Facet[];
   total: number;
   filtered: number;
 };
 
-export default function ProductFilters({ categories, allTags, total, filtered }: Props) {
+export default function ProductFilters({ categories, facets, total, filtered }: Props) {
   const router = useRouter();
   const sp = useSearchParams();
 
   const q = sp.get("q") ?? "";
   const cat = sp.get("cat") ?? "";
   const subs = sp.getAll("sub");
-  const tags = sp.getAll("tag");
+  const attrs = sp.getAll("attr");
   const featured = sp.get("featured") === "1";
   const sort = sp.get("sort") ?? "newest";
 
@@ -54,7 +55,7 @@ export default function ProductFilters({ categories, allTags, total, filtered }:
   );
 
   const clearAll = () => router.push("/produtos", { scroll: false });
-  const hasFilters = q || cat || subs.length || tags.length || featured;
+  const hasFilters = q || cat || subs.length || attrs.length || featured;
 
   const selectedCat = categories.find((c) => c.slug === cat);
 
@@ -149,27 +150,31 @@ export default function ProductFilters({ categories, allTags, total, filtered }:
         </div>
       )}
 
-      {/* Tags */}
-      {allTags.length > 0 && (
-        <div className="space-y-2">
-          <label className="text-xs tracking-widest text-brown/60 font-semibold uppercase">Características</label>
+      {/* Características — um grupo por faceta (Material, Cor…) */}
+      {facets.map((facet) => (
+        <div key={facet.name} className="space-y-2">
+          <label className="text-xs tracking-widest text-brown/60 font-semibold uppercase">{facet.name}</label>
           <div className="flex flex-wrap gap-1.5">
-            {allTags.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => toggleMulti("tag", tag)}
-                className={`text-xs px-2.5 py-1 border transition-colors ${
-                  tags.includes(tag)
-                    ? "bg-orange text-white border-orange"
-                    : "bg-white text-brown/70 border-brown/20 hover:border-orange hover:text-orange"
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
+            {facet.values.map(({ value, count }) => {
+              const param = encodeAttrParam(facet.name, value);
+              const active = attrs.includes(param);
+              return (
+                <button
+                  key={value}
+                  onClick={() => toggleMulti("attr", param)}
+                  className={`text-xs px-2.5 py-1 border transition-colors ${
+                    active
+                      ? "bg-orange text-white border-orange"
+                      : "bg-white text-brown/70 border-brown/20 hover:border-orange hover:text-orange"
+                  }`}
+                >
+                  {value} <span className={active ? "text-white/70" : "text-brown/40"}>({count})</span>
+                </button>
+              );
+            })}
           </div>
         </div>
-      )}
+      ))}
 
       {/* Destaques */}
       <label className="flex items-center gap-3 cursor-pointer">

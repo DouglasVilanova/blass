@@ -15,7 +15,7 @@ import {
 } from "@/lib/db";
 
 const MAX_FEATURED = 6;
-import type { BlogCategory, BlogPost, Category, Product } from "@/lib/types";
+import type { BlogCategory, BlogPost, Category, Product, ProductAttribute } from "@/lib/types";
 
 // ────────────────────────────────────────────────────────────
 // HELPERS
@@ -26,6 +26,21 @@ function parseJsonArray(formData: FormData, key: string): string[] {
     const raw = String(formData.get(key) ?? "[]");
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed.map(String).filter(Boolean) : [];
+  } catch { return []; }
+}
+
+/** Parse attributes JSON: [{ name, values[] }] — sanitiza nomes/valores vazios */
+function parseAttributes(formData: FormData): ProductAttribute[] {
+  try {
+    const raw = String(formData.get("attributes") ?? "[]");
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map((a: any) => ({
+        name: String(a?.name ?? "").trim(),
+        values: Array.isArray(a?.values) ? a.values.map(String).map((v: string) => v.trim()).filter(Boolean) : [],
+      }))
+      .filter((a) => a.name && a.values.length > 0);
   } catch { return []; }
 }
 
@@ -72,7 +87,7 @@ export async function createProduct(formData: FormData) {
     description: String(formData.get("description") ?? "") || undefined,
     image: String(formData.get("image") ?? "") || undefined,
     gallery: parseJsonArray(formData, "gallery"),
-    tags: parseJsonArray(formData, "tags"),
+    attributes: parseAttributes(formData),
     featured,
     published: formData.get("published") === "on",
     createdAt: new Date().toISOString(),
@@ -113,7 +128,8 @@ export async function updateProduct(id: string, formData: FormData) {
     description: String(formData.get("description") ?? "") || undefined,
     image: newImage,
     gallery: newGallery,
-    tags: parseJsonArray(formData, "tags"),
+    tags: existing?.tags ?? [],
+    attributes: parseAttributes(formData),
     featured,
     published: formData.get("published") === "on",
     createdAt: existing?.createdAt ?? new Date().toISOString(),
