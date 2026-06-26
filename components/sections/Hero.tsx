@@ -1,35 +1,46 @@
+import Link from "next/link";
 import type { SiteSettings } from "@/lib/types";
-import HeroCarousel from "./HeroCarousel";
+import Reveal from "@/components/Reveal";
 
 export default function Hero({ settings }: { settings: SiteSettings }) {
-  // Migra legado: se não tem banners[] mas tem image, usa image como único banner
-  const banners =
-    settings.hero.banners && settings.hero.banners.length > 0
-      ? settings.hero.banners
-      : settings.hero.image
-      ? [settings.hero.image]
-      : [];
+  // Banner oficial do mockup (BANNER HEADER.png → /novo/hero.webp)
+  const image = "/novo/hero.webp";
+  const t = settings.tagline;
 
-  // Múltiplos banners → carrossel client com auto-rotate
-  if (banners.length > 1) {
-    return <HeroCarousel banners={banners} />;
-  }
-
-  // 1 banner ou nenhum → renderiza estático (SSR puro, sem JS)
-  const single = banners[0];
   return (
-    <section className="relative w-full overflow-hidden bg-brown-dark">
-      {single && (
-        <img
-          src={single}
-          alt=""
-          aria-hidden
-          fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-      )}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/55" />
-      <div className="relative h-[55vh] min-h-[380px] max-h-[640px]" />
+    <section className="relative w-full overflow-hidden bg-[#4F2612]">
+      {/* Foto de fundo */}
+      <img
+        src={image}
+        alt=""
+        aria-hidden
+        fetchPriority="high"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+
+      {/* Vinheta: escurece bordas e base para leitura do texto (mesma cor do bloco 2) */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#4F2612]/40 via-[#4F2612]/10 to-[#4F2612]" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#4F2612]/50 via-transparent to-[#4F2612]/50" />
+
+      {/* Conteúdo */}
+      <div className="relative mx-auto max-w-7xl px-6 min-h-[80vh] md:min-h-[88vh] flex flex-col items-center justify-end pb-16 md:pb-24 text-center">
+        <Reveal variant="fade" delay={150}>
+          <h1 className="font-exo font-semibold text-cream-light text-3xl md:text-5xl lg:text-[3.4rem] leading-[1.12] max-w-4xl drop-shadow-[0_2px_20px_rgba(0,0,0,0.7)]">
+            {t.line1} <span className="text-orange">{t.highlight1}</span>
+            <br className="hidden sm:block" />
+            {" "}{t.line2} <span className="text-orange">{t.highlight2}</span>
+          </h1>
+        </Reveal>
+
+        <Reveal variant="up" delay={500}>
+          <Link
+            href={t.ctaHref || "/produtos"}
+            className="mt-8 inline-flex items-center rounded-full border-2 border-orange bg-night-deep/30 backdrop-blur-sm text-cream-light hover:bg-orange hover:text-white font-medium tracking-wide px-8 py-3.5 text-sm md:text-base transition-colors"
+          >
+            {t.ctaLabel || "Confira as soluções disponíveis!"}
+          </Link>
+        </Reveal>
+      </div>
     </section>
   );
 }

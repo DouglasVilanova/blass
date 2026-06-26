@@ -7,18 +7,44 @@
 - **Deploy:** Vercel (framework preset: Next.js)
 - **Email:** dodo.vilanova@gmail.com
 
-## Design System
+## Design System (cores oficiais do Manual de Marca)
 | Token | Valor | Tailwind |
 |---|---|---|
-| Cream | `#F4E8C5` | `cream` |
-| Brown dark | `#3D2317` | `brown` |
-| Brown mid | `#5E3520` | `brown-mid` |
-| Orange | `#E87422` | `orange` |
-| Fonte body | Inter | `font-sans` |
-| Fonte display | Marcellus | `font-display` |
+| Cream | `#FFFADD` | `cream` |
+| Brown | `#4F2612` | `brown` |
+| Orange | `#F0781A` | `orange` |
+| Night (fundo dark) | `#1F1108` | `night` |
+| Night deep | `#150B05` | `night-deep` |
+| Borda card (novo) | `#BB581D` | — |
 
 Padrão de botões: `.btn-orange`, `.btn-outline` (globals.css)
-Padrão zigzag: `.pattern-zigzag` (globals.css)
+
+## LP Nova — Design dark (concluída — 2026-06)
+Seguindo o mockup em `C:\Blass\SITE BLASS NOVO\` (`site-exemple.png`). Tema **dark/cinematográfico**: fundo `night`, texto creme, fonte **Exo 2** (`font-exo`, Google Fonts) aplicada só no site via `app/(site)/layout.tsx` (admin segue Inter). Assets otimizados por `scripts/optimize-novo.mjs` → `public/novo/*.webp`.
+
+### Ordem dos blocos da home (`app/(site)/page.tsx`)
+| # | Bloco | Componente | Conteúdo / fonte de dados |
+|---|---|---|---|
+| 1 | Hero | `Hero.tsx` | img fixa `/novo/hero.webp` + texto de `settings.tagline` (line/highlight/cta) |
+| 2 | A Blass que construímos | `About.tsx` + `ConstruimosCard.tsx` | texto FIXO + camadas prédio/mão/brilho posicionadas por `settings.layouts.construimos` |
+| 3 | Inovação no setor moveleiro | `Inovacao.tsx` + `InovacaoCarousel.tsx` | texto FIXO + galeria editável `settings.inovacao.images` |
+| 4 | Faixa Tendências | `Tendencias.tsx` | texto + bg `/novo/tendencias-fundo.webp` (FIXO) |
+| 5 | Cards categoria LED | `CategoriasLed.tsx` | 3 cards aceso/apagado (crossfade CSS no hover), zigzag, links `/produtos?cat=` (FIXO) |
+| 6 | Galeria "duas décadas" | `GaleriaDecadas.tsx` | esteira auto-rolagem `animate-marquee`, fotos `/novo/galeria-*.webp` (FIXO) |
+| 7 | Pills categorias | `PillsCategorias.tsx` | marquee reverso lento, fundo `#FE7824` (FIXO) |
+| 8 | Novidades | `FeaturedCarousel.tsx` | produtos com `featured=true` (carrossel dark, card borda laranja) |
+
+Header (`components/Header.tsx`): pill flutuante translúcida sobre o hero, símbolo `/novo/simbolo.webp` + logo `/novo/logo-menu.webp` + nav fixo + WhatsApp/Instagram. Footer (`components/Footer.tsx`): logo `/novo/logo-rodape.webp` + menu + `settings.contact` + redes.
+
+Borda entre blocos: `border-t border-[#6E5E53]` (1px). Borda de cards: degradê `from-[#BB581D]`.
+
+### Editor de posição por bloco
+Blocos com camadas sobrepostas têm página `/gestao/blocos/<bloco>` com sliders X/Y/Tamanho + preview ao vivo. Posições em `settings.layouts.<bloco>` (%). Componente de apresentação compartilhado entre site e editor (ex: `ConstruimosCard`) garante preview = resultado. Ver [[editor-posicao-blocos]].
+
+### Blocos admin que sobraram (só os do design novo)
+`/gestao/blocos/`: **tagline** (texto do Hero), **construimos** (posições), **inovacao** (galeria), **rodape** (contato). Removidos: hero, sobre, categorias-cards, stats, destaque, reach, menu. Componentes removidos: `Stats`, `ReachCTA`, `Highlight`, `CategoryCards`, `Tagline`, `HeroCarousel`, `BrazilOutline`, `BrandLogo`. Visibilidade reduzida a 1 toggle (Novidades = `visibility.highlight`).
+
+> **NUNCA commit/push sem ordem do usuário** — redesign ajustado tudo localmente.
 
 ## Stack
 | Camada | Tech |
@@ -27,10 +53,12 @@ Padrão zigzag: `.pattern-zigzag` (globals.css)
 | Linguagem | TypeScript strict |
 | Estilo | Tailwind CSS 3 |
 | Banco | Supabase Postgres |
-| Auth | Supabase Auth ✅ (login + middleware + guard) |
+| Auth | **Env-based** (ADMIN_EMAIL/ADMIN_PASSWORD) + cookie HMAC-SHA256 — NÃO usa Supabase Auth |
 | Storage | Supabase bucket `site-images` |
-| Otimização imagem | Sharp → WebP 1400px max, quality 82 |
+| Otimização imagem | Sharp → WebP por pasta: `site` 2400px q90, `products`/`blog` 1600px q85 |
 | Deploy | Vercel |
+
+> **REGRA — imagens sempre otimizadas:** toda imagem enviada pelo painel passa por Sharp → WebP antes de ir pro bucket `site-images`. Nunca guardar imagem (base64/binário) no Postgres — só a URL pública do bucket. Economiza espaço de banco e custo. Upload do browser também comprime client-side (canvas ≤2400px) antes do POST, pra não estourar o limite de 4.5 MB da Vercel.
 
 ## Supabase
 - **URL:** `https://xrpjblaodapidqeegzxy.supabase.co`
@@ -70,10 +98,10 @@ Setadas em: `.env.local` (dev) + Vercel Environment Variables (prod)
 ### Site público
 | Rota | Descrição |
 |---|---|
-| `/` | Home (hero, sobre, cards categorias, stats, tagline, destaque, reach CTA) |
+| `/` | Home (LP dark nova — ver tabela de blocos acima) |
 | `/produtos` | Catálogo e-commerce com filtros avançados |
 | `/produtos?cat=iluminacao` | Filtro por categoria (URL param) |
-| `/produtos?q=fita&sub=fitas-de-led&tag=Preto` | Filtros combinados |
+| `/produtos?cat=iluminacao&attr=Cor:Branco&attr=Material:Aluminio` | Filtros combinados (atributos) |
 | `/produtos/[categoria]/[slug]` | Detalhe do produto + galeria + lightbox |
 | `/blog` | Listagem de posts |
 | `/blog/[slug]` | Post individual |
@@ -82,17 +110,13 @@ Setadas em: `.env.local` (dev) + Vercel Environment Variables (prod)
 | Rota | Descrição |
 |---|---|
 | `/gestao` | Dashboard com status Supabase + storage |
-| `/gestao/blocos/menu` | Header: telefone + redes sociais |
-| `/gestao/blocos/hero` | Hero: título, subtítulo, imagem |
-| `/gestao/blocos/sobre` | Parágrafos da seção Sobre |
-| `/gestao/blocos/categorias-cards` | Intro dos cards de categoria |
-| `/gestao/blocos/stats` | 26 anos / 2000+ revendas / cobertura |
-| `/gestao/blocos/tagline` | Faixa "Qualidade que ilumina" |
-| `/gestao/blocos/destaque` | Bloco Novidade/Fita COB |
-| `/gestao/blocos/reach` | CTA "Quero comprar" + mapa |
-| `/gestao/blocos/rodape` | Rodapé: contato completo |
-| `/gestao/visibilidade` | Toggles on/off por bloco (filtra menu lateral) |
+| `/gestao/blocos/tagline` | **Hero**: texto (line/highlight) + label/href do botão |
+| `/gestao/blocos/construimos` | **Bloco 2**: sliders de posição prédio/mão/brilho (`layouts.construimos`) |
+| `/gestao/blocos/inovacao` | **Bloco 3**: galeria editável (`inovacao.images`) via GalleryUpload |
+| `/gestao/blocos/rodape` | Contato (telefone/email/endereço/redes) — usado no Header e Footer |
+| `/gestao/visibilidade` | Toggle do bloco Novidades (`visibility.highlight`) |
 | `/gestao/seo` | Scripts livres `<head>` e `<body>` |
+| `/gestao/security` | Info de segurança (login env-based) |
 | `/gestao/produtos` | CRUD produtos (tabela com thumbnail) |
 | `/gestao/produtos/novo` | Form novo produto |
 | `/gestao/produtos/[id]` | Editar produto |
@@ -111,14 +135,19 @@ Desempenadores de portas, Suportes para tubo cabideiro, Tubo para cabideiro, Pux
 ## Arquitetura de Dados
 
 ### Settings (lib/types.ts → SiteSettings)
+Campos USADOS na LP nova em **negrito**; os demais continuam no tipo (compat de dados) mas inertes.
 ```
-hero          { title, subtitle, image }
-about         { paragraphs: string[] }
-categoriesIntro { title, subtitle }
-stats         { years, resellers, coverage }
-tagline       { line1, highlight1, line2, highlight2, ctaLabel, ctaHref, image }
-highlight     { tag, title, subtitle, body, image }
-reach         { title, body, ctaLabel, ctaHref }
+hero          { title, subtitle, image, banners }   (inerte — Hero usa /novo/hero.webp fixo)
+about         { paragraphs }                          (inerte — texto fixo no componente)
+categoriesIntro { title, subtitle }                   (inerte)
+stats         { years, resellers, coverage }          (inerte)
+**tagline**   { line1, highlight1, line2, highlight2, ctaLabel, ctaHref, image }  → texto do Hero
+highlight     { tag, ... }                             (só .tag é usado no Novidades)
+reach         { ... }                                  (inerte)
+**layouts**   { construimos: { predioZoom, mao{x,y,w}, brilho{x,y,w} } }  → posições do bloco 2
+**inovacao**  { images: string[] }                     → galeria do bloco 3
+**contact**   { phone, phoneDigits, email, address, instagram, facebook, linkedin }  → Header+Footer
+**visibility** { highlight, ... }                      (só highlight usado = liga/desliga Novidades)
 contact       { phone, phoneDigits, email, address, instagram, facebook, linkedin }
 visibility    { stats, tagline, highlight, reach }
 seo           { head, bodyStart }

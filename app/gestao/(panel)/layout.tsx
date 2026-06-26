@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Boxes, FileText, Home, Tags, Eye, Code2, LogOut, LayoutGrid, Image as ImageIcon, BarChart3, Sparkles, Megaphone, Phone, Type, Shield } from "lucide-react";
+import { Boxes, FileText, Home, Tags, Eye, Code2, LogOut, Image as ImageIcon, Phone, Type } from "lucide-react";
 import { ToastProvider } from "@/components/gestao/Toast";
 import { getSettings } from "@/lib/settings";
 import { cookies } from "next/headers";
@@ -15,14 +15,13 @@ type Item = {
 };
 
 const BLOCOS: Item[] = [
-  { href: "/gestao/blocos/menu", label: "Menu / Logo", icon: LayoutGrid },
-  { href: "/gestao/blocos/hero", label: "Hero", icon: ImageIcon },
-  { href: "/gestao/blocos/sobre", label: "Sobre", icon: Type },
-  { href: "/gestao/blocos/categorias-cards", label: "Cards de Categorias", icon: Boxes },
-  { href: "/gestao/blocos/stats", label: "Estatísticas", icon: BarChart3, visibilityKey: "stats" },
-  { href: "/gestao/blocos/tagline", label: "Faixa Tagline", icon: Megaphone, visibilityKey: "tagline" },
-  { href: "/gestao/blocos/destaque", label: "Destaque", icon: Sparkles, visibilityKey: "highlight" },
-  { href: "/gestao/blocos/reach", label: "CTA / Reach", icon: Megaphone, visibilityKey: "reach" },
+  { href: "/gestao/blocos/tagline", label: "Hero (texto + botão)", icon: Type },
+  { href: "/gestao/blocos/construimos", label: "Construímos (imagens)", icon: ImageIcon },
+  { href: "/gestao/blocos/inovacao", label: "Inovação (galeria)", icon: ImageIcon },
+  { href: "/gestao/blocos/tendencias", label: "Faixa Tendências", icon: Type },
+  { href: "/gestao/blocos/categorias-cards", label: "Cards categoria (LED)", icon: Boxes },
+  { href: "/gestao/blocos/galeria", label: "Galeria (duas décadas)", icon: ImageIcon },
+  { href: "/gestao/blocos/pills", label: "Faixa de palavras", icon: Type },
   { href: "/gestao/blocos/rodape", label: "Rodapé / Contato", icon: Phone },
 ];
 
@@ -33,7 +32,6 @@ const GERAL: Item[] = [
   { href: "/gestao/blog", label: "Blog", icon: FileText },
   { href: "/gestao/visibilidade", label: "Visibilidade", icon: Eye },
   { href: "/gestao/seo", label: "SEO", icon: Code2 },
-  { href: "/gestao/security", label: "Segurança", icon: Shield },
 ];
 
 function filterByVisibility(items: Item[], v: SiteVisibility) {
@@ -54,10 +52,10 @@ export default async function GestaoLayout({ children }: { children: React.React
   return (
     <ToastProvider>
       <div className="min-h-screen flex bg-cream-light text-brown">
-        <aside className="w-64 bg-brown text-cream-light flex-shrink-0 sticky top-0 h-screen overflow-y-auto">
+        <aside className="w-64 bg-brown text-cream-light flex-shrink-0 sticky top-0 h-screen overflow-y-auto font-exo">
           <div className="p-6">
-            <img src="/brand/logo-negativo.webp" alt="Blass" width={130} height={38} />
-            <div className="text-[10px] tracking-widest text-orange mt-2">GESTÃO</div>
+            <img src="/novo/logo-menu.webp" alt="Blass" className="h-5 w-auto" />
+            <div className="text-[10px] tracking-[0.3em] text-orange mt-2">GESTÃO</div>
           </div>
 
           <nav className="flex flex-col">

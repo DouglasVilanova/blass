@@ -2,13 +2,12 @@
 
 import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product } from "@/lib/types";
-import { productAttrs } from "@/lib/attributes";
 
 export default function FeaturedCarousel({
   products,
-  tag = "DESTAQUE",
+  tag: _tag,
 }: {
   products: Product[];
   tag?: string;
@@ -19,134 +18,121 @@ export default function FeaturedCarousel({
   const next = useCallback(() => setIdx((i) => (i + 1) % total), [total]);
   const prev = useCallback(() => setIdx((i) => (i - 1 + total) % total), [total]);
 
-  // Auto-rotate every 8s, pause on hover via [data-paused]
   useEffect(() => {
     if (total <= 1) return;
     const id = setInterval(() => {
-      const el = document.getElementById("featured-carousel");
+      const el = document.getElementById("novidades");
       if (el?.dataset.paused === "true") return;
       setIdx((i) => (i + 1) % total);
-    }, 8000);
+    }, 9000);
     return () => clearInterval(id);
   }, [total]);
-
-  // Keyboard arrows
-  useEffect(() => {
-    if (total <= 1) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") next();
-      if (e.key === "ArrowLeft") prev();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev, total]);
 
   if (total === 0) return null;
 
   const current = products[idx];
-  const currentAttrValues = productAttrs(current).flatMap((a) => a.values);
+  const href = `/produtos/${current.category}/${current.slug}`;
+
+  // Última palavra do nome em laranja (ex: "Fita COB 3mm" → "3mm")
+  const parts = current.name.trim().split(" ");
+  const lastWord = parts.length > 1 ? parts.pop() : "";
+  const headWords = parts.join(" ");
 
   return (
     <section
-      id="featured-carousel"
-      className="bg-cream py-20 relative overflow-hidden"
+      id="novidades"
+      className="relative bg-[#4F2612] border-t border-[#6E5E53] py-14 md:py-20 overflow-hidden"
       onMouseEnter={(e) => (e.currentTarget.dataset.paused = "true")}
       onMouseLeave={(e) => (e.currentTarget.dataset.paused = "false")}
     >
-      <div className="mx-auto max-w-6xl px-6">
-        {/* Tag header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <span className="block w-12 h-1.5 bg-orange" />
-            <span className="text-xs tracking-widest font-semibold text-brown">{tag}</span>
-          </div>
-          <div className="text-xs text-brown/50 tracking-widest">
-            {idx + 1} / {total}
-          </div>
-        </div>
+      {/* Glow laranja no topo */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-64 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at top, rgba(240,120,26,0.22), transparent 65%)" }}
+      />
 
-        {/* Slide */}
-        <div className="grid md:grid-cols-2 gap-12 items-center min-h-[500px]">
-          <div className="space-y-5">
-            <div className="border-t border-brown/30 pt-6">
-              {currentAttrValues.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mb-3">
-                  {currentAttrValues.slice(0, 3).map((t) => (
-                    <span key={t} className="text-[10px] tracking-widest text-orange uppercase font-semibold">
-                      {t}
-                    </span>
-                  )).reduce<React.ReactNode[]>((acc, el, i) => i === 0 ? [el] : [...acc, <span key={`d${i}`} className="text-orange/40">·</span>, el], [])}
-                </div>
-              )}
-              <h2 className="font-display text-5xl text-brown leading-tight">{current.name}</h2>
-              {current.shortDescription && (
-                <p className="font-display text-xl text-brown/70 mt-3">{current.shortDescription}</p>
-              )}
+      <div className="relative mx-auto max-w-6xl px-6">
+        <h2 className="font-exo font-bold uppercase tracking-wide text-cream-light text-3xl md:text-5xl text-center mb-10">
+          Novidades
+        </h2>
+
+        <div className="relative">
+          {/* Card */}
+          <div className="rounded-[26px] border border-orange/80 bg-brown/20 p-6 md:p-10">
+            <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
+              {/* Texto */}
+              <div>
+                <h3 className="font-exo font-semibold text-cream-light text-2xl md:text-3xl">
+                  {headWords} {lastWord && <span className="text-orange">{lastWord}</span>}
+                </h3>
+                {current.description ? (
+                  <div className="mt-4 text-cream-light/75 text-sm leading-relaxed whitespace-pre-line line-clamp-[12]">
+                    {current.description}
+                  </div>
+                ) : current.shortDescription ? (
+                  <p className="mt-4 text-cream-light/75 text-sm leading-relaxed">{current.shortDescription}</p>
+                ) : null}
+
+                <Link
+                  href={href}
+                  className="mt-6 inline-flex items-center rounded-full border border-orange text-cream-light hover:bg-orange hover:text-white px-6 py-2.5 text-sm transition-colors"
+                >
+                  saiba mais clicando <strong className="font-bold ml-1">aqui!</strong>
+                </Link>
+              </div>
+
+              {/* Imagem */}
+              <Link
+                href={href}
+                className="block rounded-[18px] overflow-hidden border border-orange/50 aspect-[4/5] bg-night-deep group"
+              >
+                {current.image ? (
+                  <img
+                    key={current.image}
+                    src={current.image}
+                    alt={current.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-cream-light/20 font-exo text-9xl">B</div>
+                )}
+              </Link>
             </div>
-
-            {current.description && (
-              <div className="text-sm text-brown/80 leading-relaxed whitespace-pre-line line-clamp-[10]">
-                {current.description}
-              </div>
-            )}
-
-            <Link
-              href={`/produtos/${current.category}/${current.slug}`}
-              className="inline-flex items-center gap-2 btn-orange mt-6"
-            >
-              Ver produto completo <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
 
-          {/* Image */}
-          <Link
-            href={`/produtos/${current.category}/${current.slug}`}
-            className="block aspect-[4/5] w-full overflow-hidden bg-brown-dark group relative"
-          >
-            {current.image ? (
-              <img
-                key={current.image}
-                src={current.image}
-                alt={current.name}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-cream-light/20 font-display text-9xl">
-                B
-              </div>
-            )}
-          </Link>
+          {/* Setas */}
+          {total > 1 && (
+            <>
+              <button
+                onClick={prev}
+                aria-label="Anterior"
+                className="absolute -left-3 md:-left-6 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-cream-light/90 hover:bg-orange text-orange hover:text-white flex items-center justify-center shadow-lg shadow-black/30 transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={next}
+                aria-label="Próximo"
+                className="absolute -right-3 md:-right-6 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-cream-light/90 hover:bg-orange text-orange hover:text-white flex items-center justify-center shadow-lg shadow-black/30 transition-colors"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </>
+          )}
         </div>
 
-        {/* Controls */}
+        {/* Dots */}
         {total > 1 && (
-          <div className="flex items-center justify-center gap-6 mt-10">
-            <button
-              onClick={prev}
-              aria-label="Anterior"
-              className="w-10 h-10 border border-brown/30 hover:border-orange hover:bg-orange hover:text-white text-brown flex items-center justify-center transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-
-            <div className="flex gap-2">
-              {products.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setIdx(i)}
-                  aria-label={`Produto ${i + 1}`}
-                  className={`h-1.5 transition-all ${i === idx ? "bg-orange w-10" : "bg-brown/20 w-5 hover:bg-brown/40"}`}
-                />
-              ))}
-            </div>
-
-            <button
-              onClick={next}
-              aria-label="Próximo"
-              className="w-10 h-10 border border-brown/30 hover:border-orange hover:bg-orange hover:text-white text-brown flex items-center justify-center transition-colors"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
+          <div className="flex justify-center gap-2 mt-6">
+            {products.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIdx(i)}
+                aria-label={`Novidade ${i + 1}`}
+                className={`h-1.5 rounded-full transition-all ${i === idx ? "bg-orange w-8" : "bg-cream-light/30 w-3 hover:bg-cream-light/50"}`}
+              />
+            ))}
           </div>
         )}
       </div>

@@ -44,7 +44,7 @@ export default async function GestaoDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-3xl text-brown">Painel</h1>
+        <h1 className="font-exo font-bold text-3xl text-brown">Painel</h1>
         <p className="text-brown/60 mt-1">Visão geral e status do sistema.</p>
       </div>
 
@@ -69,10 +69,10 @@ export default async function GestaoDashboard() {
           <Link
             key={s.label}
             href={s.href}
-            className="block bg-white border border-brown/10 hover:border-orange p-6 transition-colors group"
+            className="block bg-white border border-brown/10 hover:border-orange rounded-xl p-6 transition-colors group"
           >
             <div className="text-[10px] tracking-widest text-brown/50 font-semibold uppercase">{s.label}</div>
-            <div className="font-display text-4xl text-brown mt-2 group-hover:text-orange transition-colors">{s.value}</div>
+            <div className="font-exo font-bold text-4xl text-brown mt-2 group-hover:text-orange transition-colors">{s.value}</div>
           </Link>
         ))}
       </div>
@@ -90,7 +90,7 @@ export default async function GestaoDashboard() {
 
 function StatusCard({ label, ok, msg, warn }: { label: string; ok: boolean; msg: string; warn?: boolean }) {
   return (
-    <div className={`bg-white border p-5 flex items-start gap-3 ${ok ? "border-brown/10" : warn ? "border-orange/40" : "border-red-200"}`}>
+    <div className={`bg-white border rounded-xl p-5 flex items-start gap-3 ${ok ? "border-brown/10" : warn ? "border-orange/40" : "border-red-200"}`}>
       {ok
         ? <CheckCircle2 className="w-5 h-5 text-orange mt-0.5 flex-shrink-0" />
         : warn

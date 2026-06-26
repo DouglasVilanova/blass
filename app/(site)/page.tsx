@@ -1,20 +1,18 @@
 import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
-import CategoryCards from "@/components/sections/CategoryCards";
-import Stats from "@/components/sections/Stats";
-import Tagline from "@/components/sections/Tagline";
-import Highlight from "@/components/sections/Highlight";
+import Inovacao from "@/components/sections/Inovacao";
+import Tendencias from "@/components/sections/Tendencias";
+import CategoriasLed from "@/components/sections/CategoriasLed";
+import GaleriaDecadas from "@/components/sections/GaleriaDecadas";
+import PillsCategorias from "@/components/sections/PillsCategorias";
 import FeaturedCarousel from "@/components/sections/FeaturedCarousel";
-import ReachCTA from "@/components/sections/ReachCTA";
-import { readStore } from "@/lib/store";
 import { getSettings } from "@/lib/settings";
 import { getFeaturedProducts } from "@/lib/db";
 
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const [store, settings, featured] = await Promise.all([
-    readStore(),
+  const [settings, featured] = await Promise.all([
     getSettings(),
     getFeaturedProducts(6),
   ]);
@@ -24,15 +22,18 @@ export default async function HomePage() {
     <>
       <Hero settings={settings} />
       <About settings={settings} />
-      <CategoryCards categories={store.categories} intro={settings.categoriesIntro} />
-      {v.stats && <Stats settings={settings} />}
-      {v.tagline && <Tagline settings={settings.tagline} />}
-      {v.highlight && (
-        featured.length > 0
-          ? <FeaturedCarousel products={featured} tag={settings.highlight.tag} />
-          : <Highlight settings={settings} />
+      <Inovacao settings={settings} />
+      <Tendencias
+        text={settings.tendencias?.text}
+        highlight={settings.tendencias?.highlight}
+        image={settings.tendencias?.image}
+      />
+      <CategoriasLed cards={settings.categoriasCards?.cards} />
+      <GaleriaDecadas images={settings.galeria?.images} />
+      <PillsCategorias words={settings.pills?.words} />
+      {v.highlight && featured.length > 0 && (
+        <FeaturedCarousel products={featured} tag={settings.highlight.tag} />
       )}
-      {v.reach && <ReachCTA settings={settings} />}
     </>
   );
 }

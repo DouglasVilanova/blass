@@ -5,10 +5,7 @@ import { saveSection } from "@/app/gestao/(panel)/settings-actions";
 import type { SiteVisibility } from "@/lib/types";
 
 const TOGGLES: { key: keyof SiteVisibility; label: string; description: string }[] = [
-  { key: "stats", label: "Estatísticas", description: "Faixa com 26 anos / 2000+ revendas / mapa." },
-  { key: "tagline", label: "Faixa Tagline", description: "Imagem da cozinha + frase + CTA." },
-  { key: "highlight", label: "Destaque", description: "Bloco 'Novidade' com produto em foco." },
-  { key: "reach", label: "CTA Reach", description: "Seção marrom com mapa e botão QUERO COMPRAR." },
+  { key: "highlight", label: "Novidades", description: "Bloco 'Novidades' com os produtos marcados como destaque (carrossel)." },
 ];
 
 export default function VisibilidadeEditor({ initial }: { initial: SiteVisibility }) {

@@ -33,7 +33,7 @@ export const DEFAULT_STORE: Store = {
       highlight1: "ilumina projetos",
       line2: "e",
       highlight2: "transforma ambientes.",
-      ctaLabel: "veja o catálogo completo de soluções",
+      ctaLabel: "Confira as soluções disponíveis!",
       ctaHref: "/produtos",
       image: "",
     },
@@ -52,6 +52,53 @@ export const DEFAULT_STORE: Store = {
     seo: {
       head: "",
       bodyStart: "",
+    },
+    layouts: {
+      construimos: {
+        predioZoom: 1.15,
+        mao: { x: 80, y: 52, w: 54 },
+        brilho: { x: 72, y: 92, w: 60 },
+      },
+    },
+    inovacao: {
+      images: ["/novo/carrossel.webp"],
+    },
+    galeria: {
+      images: [
+        "/novo/galeria-1.webp",
+        "/novo/galeria-2.webp",
+        "/novo/galeria-3.webp",
+        "/novo/galeria-4.webp",
+        "/novo/galeria-5.webp",
+      ],
+    },
+    pills: {
+      words: [
+        "FITAS DE LED",
+        "PERFIS PARA LED",
+        "LUMINÁRIAS",
+        "FONTES E DRIVERS",
+        "ACIONADORES",
+        "DIFUSORES",
+        "CABIDEIROS",
+        "PUXADORES",
+        "SUPORTES",
+        "TÁBUAS DE PASSAR",
+        "TRAVA PORTA",
+        "GRADE FORNO",
+      ],
+    },
+    tendencias: {
+      text: "A **Blass** não nasceu para seguir as tendências…",
+      highlight: "Nasceu para criá-las!",
+      image: "/novo/tendencias-fundo.webp",
+    },
+    categoriasCards: {
+      cards: [
+        { label: "ILUMINAÇÃO", href: "/produtos?cat=iluminacao", off: "/novo/cat-iluminacao-off.webp", on: "/novo/cat-iluminacao-on.webp" },
+        { label: "COMPONENTES", href: "/produtos?cat=componentes", off: "/novo/cat-componentes-off.webp", on: "/novo/cat-componentes-on.webp" },
+        { label: "ACESSÓRIOS", href: "/produtos?cat=acessorios", off: "/novo/cat-acessorios-off.webp", on: "/novo/cat-acessorios-on.webp" },
+      ],
     },
     contact: {
       phone: "(54) 3022-9600",

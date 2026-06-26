@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Marcellus } from "next/font/google";
+import { Inter, Marcellus, Exo_2 } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import SeoHeadTags from "@/components/SeoHeadTags";
@@ -8,6 +8,14 @@ import { ConfirmProvider } from "@/components/gestao/ConfirmDialog";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const marcellus = Marcellus({ subsets: ["latin"], weight: "400", variable: "--font-marcellus", display: "swap" });
+
+// Fonte do novo site (mockup) — Exo 2
+const exo2 = Exo_2({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-exo2",
+  display: "swap",
+});
 
 // Fonte oficial da marca Blass — Punoer (do Manual de Marca)
 const punoer = localFont({
@@ -60,7 +68,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const settings = await getSettings();
 
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${marcellus.variable} ${punoer.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${marcellus.variable} ${exo2.variable} ${punoer.variable}`}>
       <body>
         {settings.seo.head && <SeoHeadTags html={settings.seo.head} />}
         {settings.seo.bodyStart && (

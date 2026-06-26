@@ -50,6 +50,18 @@ export type SiteVisibility = {
   reach: boolean;
 };
 
+/** Posição de uma camada de imagem: centro em x/y (% do box) e largura w (% do box). */
+export type LayerPos = { x: number; y: number; w: number };
+
+/** Ajustes de layout/posicionamento por bloco (editáveis no painel). */
+export type SiteLayouts = {
+  construimos: {
+    predioZoom: number; // escala CSS do prédio (1 = sem zoom)
+    mao: LayerPos;
+    brilho: LayerPos;
+  };
+};
+
 export type SiteSeo = {
   head: string;
   bodyStart: string;
@@ -80,6 +92,12 @@ export type SiteSettings = {
   };
   visibility: SiteVisibility;
   seo: SiteSeo;
+  layouts: SiteLayouts;
+  inovacao: { images: string[] };
+  galeria: { images: string[] };
+  pills: { words: string[] };
+  tendencias: { text: string; highlight: string; image: string };
+  categoriasCards: { cards: { label: string; href: string; off: string; on: string }[] };
 };
 
 export type Store = {
