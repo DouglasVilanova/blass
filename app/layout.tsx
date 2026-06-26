@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Marcellus, Exo_2 } from "next/font/google";
+import { Inter, Marcellus } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import SeoHeadTags from "@/components/SeoHeadTags";
@@ -9,10 +9,15 @@ import { ConfirmProvider } from "@/components/gestao/ConfirmDialog";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const marcellus = Marcellus({ subsets: ["latin"], weight: "400", variable: "--font-marcellus", display: "swap" });
 
-// Fonte do novo site (mockup) — Exo 2
-const exo2 = Exo_2({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+// Fonte do site (Exo 2) — woff2 subsetado e self-hosted, dos arquivos oficiais do mockup
+const exo2 = localFont({
+  src: [
+    { path: "../public/fonts/exo2/exo2-400.woff2", weight: "400", style: "normal" },
+    { path: "../public/fonts/exo2/exo2-500.woff2", weight: "500", style: "normal" },
+    { path: "../public/fonts/exo2/exo2-600.woff2", weight: "600", style: "normal" },
+    { path: "../public/fonts/exo2/exo2-700.woff2", weight: "700", style: "normal" },
+    { path: "../public/fonts/exo2/exo2-800.woff2", weight: "800", style: "normal" },
+  ],
   variable: "--font-exo2",
   display: "swap",
 });
