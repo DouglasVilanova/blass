@@ -7,6 +7,7 @@ import { getAdminEmail } from "@/lib/session-server";
 import ProductGallery from "@/components/site/ProductGallery";
 import AdminProductBar from "@/components/site/AdminProductBar";
 import { productAttrs } from "@/lib/attributes";
+import { waLink } from "@/lib/wa";
 
 type Props = { params: { categoria: string; slug: string } };
 
@@ -37,7 +38,7 @@ export default async function ProductDetail({ params }: Props) {
   if (!cat || !product) notFound();
 
   const sub = cat.subcategories.find((s) => s.slug === product.subcategory);
-  const waMsg = encodeURIComponent(`Olá! Tenho interesse no produto: ${product.name}`);
+  const waHref = waLink(settings.contact.phoneDigits, `Olá! Tenho interesse no produto: ${product.name}`);
 
   const allImages = [
     ...(product.image ? [product.image] : []),
@@ -107,7 +108,7 @@ export default async function ProductDetail({ params }: Props) {
 
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <a
-                href={`https://wa.me/55${settings.contact.phoneDigits}?text=${waMsg}`}
+                href={waHref}
                 target="_blank"
                 rel="noreferrer"
                 className="btn-orange text-center"

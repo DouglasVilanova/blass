@@ -14,7 +14,7 @@ export default function RodapeEditor({ initial }: { initial: SiteSettings["conta
       {(s, set) => (
         <div className="grid md:grid-cols-2 gap-4">
           <Field label="Telefone (exibição)"><input className={inputCls} value={s.phone} onChange={(e) => set({ phone: e.target.value })} /></Field>
-          <Field label="Telefone (dígitos para WhatsApp)"><input className={inputCls} value={s.phoneDigits} onChange={(e) => set({ phoneDigits: e.target.value })} /></Field>
+          <Field label="WhatsApp (com DDD)" hint="Número que abre no botão de WhatsApp. Ex: 54 99999-9999. Pode digitar com ou sem formatação."><input className={inputCls} value={s.phoneDigits} onChange={(e) => set({ phoneDigits: e.target.value })} placeholder="54 99999-9999" /></Field>
           <Field label="E-mail"><input className={inputCls} value={s.email} onChange={(e) => set({ email: e.target.value })} /></Field>
           <Field label="Endereço"><input className={inputCls} value={s.address} onChange={(e) => set({ address: e.target.value })} /></Field>
           <Field label="Instagram (URL)"><input className={inputCls} value={s.instagram} onChange={(e) => set({ instagram: e.target.value })} /></Field>

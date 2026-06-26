@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Instagram, Menu, X } from "lucide-react";
 import type { SiteSettings } from "@/lib/types";
+import { waLink } from "@/lib/wa";
 
 const NAV = [
   { label: "HOME", href: "/" },
@@ -27,9 +28,7 @@ export default function Header({ settings }: { settings: SiteSettings }) {
   const [open, setOpen] = useState(false);
   // Home: header sobreposto ao hero (transparente). Demais páginas: ocupa espaço, fundo sólido.
   const isHome = usePathname() === "/";
-  const wa = settings.contact.phoneDigits
-    ? `https://wa.me/55${settings.contact.phoneDigits}`
-    : settings.contact.instagram;
+  const wa = waLink(settings.contact.phoneDigits) || settings.contact.instagram;
 
   return (
     <header
