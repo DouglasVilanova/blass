@@ -14,7 +14,7 @@ export const metadata = { title: "Produtos — Blass" };
 type PageProps = {
   searchParams: {
     q?: string;
-    cat?: string;
+    cat?: string | string[];
     sub?: string | string[];
     attr?: string | string[];
     featured?: string;
@@ -42,8 +42,9 @@ function filterProducts(products: Product[], sp: PageProps["searchParams"]): Pro
     );
   }
 
-  // Category
-  if (sp.cat) out = out.filter((p) => p.category === sp.cat);
+  // Category (pode ser múltipla — ex: acessórios de iluminação E componentes)
+  const cats = arr(sp.cat);
+  if (cats.length > 0) out = out.filter((p) => cats.includes(p.category));
 
   // Subcategories
   const subs = arr(sp.sub);
@@ -96,8 +97,12 @@ export default async function ProductsPage({ searchParams }: PageProps) {
   const catMap = Object.fromEntries(categories.map((c) => [c.slug, c]));
   const view = searchParams.view ?? "grid";
 
-  const activeCatName = searchParams.cat
-    ? categories.find((c) => c.slug === searchParams.cat)?.name
+  const catList = arr(searchParams.cat);
+  const isAcessorios = arr(searchParams.sub).includes("acessorios");
+  const activeCatName = isAcessorios
+    ? "Acessórios"
+    : catList.length === 1
+    ? categories.find((c) => c.slug === catList[0])?.name
     : null;
 
   return (

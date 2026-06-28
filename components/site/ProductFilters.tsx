@@ -18,11 +18,13 @@ export default function ProductFilters({ categories, facets, total, filtered }: 
   const sp = useSearchParams();
 
   const q = sp.get("q") ?? "";
-  const cat = sp.get("cat") ?? "";
+  const cats = sp.getAll("cat");
   const subs = sp.getAll("sub");
   const attrs = sp.getAll("attr");
   const featured = sp.get("featured") === "1";
   const sort = sp.get("sort") ?? "newest";
+  // "Acessórios" não é categoria real — é a subcategoria "acessorios" de iluminação/componentes
+  const isAcessorios = subs.includes("acessorios");
 
   const set = useCallback(
     (key: string, value: string | null) => {
@@ -55,9 +57,28 @@ export default function ProductFilters({ categories, facets, total, filtered }: 
   );
 
   const clearAll = () => router.push("/produtos", { scroll: false });
-  const hasFilters = q || cat || subs.length || attrs.length || featured;
+  const hasFilters = q || cats.length || subs.length || attrs.length || featured;
 
-  const selectedCat = categories.find((c) => c.slug === cat);
+  // Categoria "acessorios" é escondida da lista (vira o item especial "Acessórios")
+  const visibleCats = categories.filter((c) => c.slug !== "acessorios");
+  const selectedCat = !isAcessorios && cats.length === 1 ? categories.find((c) => c.slug === cats[0]) : null;
+
+  // "Todas" — limpa categoria e modo acessórios
+  const showAll = () => {
+    const params = new URLSearchParams(sp.toString());
+    params.delete("cat");
+    params.delete("sub");
+    router.push(`/produtos?${params.toString()}`, { scroll: false });
+  };
+
+  // Ativa o modo Acessórios (sub=acessorios, sem categoria fixa)
+  const activateAcessorios = () => {
+    const params = new URLSearchParams(sp.toString());
+    params.delete("cat");
+    params.delete("sub");
+    params.set("sub", "acessorios");
+    router.push(`/produtos?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <aside className="space-y-6">
@@ -113,17 +134,37 @@ export default function ProductFilters({ categories, facets, total, filtered }: 
       <div className="space-y-2">
         <label className="text-xs tracking-widest text-brown/60 font-semibold uppercase">Categoria</label>
         <div className="space-y-1">
-          <FilterChip label="Todas" active={!cat} onClick={() => set("cat", null)} />
-          {categories.map((c) => (
+          <FilterChip label="Todas" active={!isAcessorios && cats.length === 0} onClick={showAll} />
+          {visibleCats.map((c) => (
             <FilterChip
               key={c.slug}
               label={c.name}
-              active={cat === c.slug}
-              onClick={() => set("cat", cat === c.slug ? null : c.slug)}
-              count={undefined}
+              active={!isAcessorios && cats.includes(c.slug)}
+              onClick={() => set("cat", !isAcessorios && cats.includes(c.slug) && cats.length === 1 ? null : c.slug)}
             />
           ))}
+          <FilterChip label="Acessórios" active={isAcessorios} onClick={activateAcessorios} />
         </div>
+
+        {/* Acessórios de: escolha a(s) categoria(s)-mãe */}
+        {isAcessorios && (
+          <div className="space-y-1 pl-2 border-l-2 border-orange/30 pt-2">
+            <div className="text-[11px] tracking-wide text-brown/50 mb-1">Acessórios de:</div>
+            {visibleCats.map((c) => (
+              <label key={c.slug} className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={cats.includes(c.slug)}
+                  onChange={() => toggleMulti("cat", c.slug)}
+                  className="w-3.5 h-3.5 accent-orange"
+                />
+                <span className={`text-sm transition-colors ${cats.includes(c.slug) ? "text-orange font-medium" : "text-brown/70 group-hover:text-brown"}`}>
+                  {c.name}
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Subcategorias */}
