@@ -4,7 +4,54 @@
  * Uses anon client for reads where possible.
  */
 import { createAdminSupabase, createClient } from "./supabase/server";
-import type { BlogCategory, BlogPost, Category, Product } from "./types";
+import type { BlogCategory, BlogPost, Category, Product, Representante } from "./types";
+
+// ────────────────────────────────────────────────────────────
+// REPRESENTANTES
+// ────────────────────────────────────────────────────────────
+
+export async function getRepresentantes(publishedOnly = false): Promise<Representante[]> {
+  const sb = publishedOnly ? createClient() : createAdminSupabase();
+  let q = sb.from("representantes").select("*").order("estado").order("cidade").order("nome");
+  if (publishedOnly) q = q.eq("published", true);
+  const { data } = await q;
+  if (!data) return [];
+  return data.map(rowToRepresentante);
+}
+
+export async function upsertRepresentante(r: Representante): Promise<void> {
+  const sb = createAdminSupabase();
+  await sb.from("representantes").upsert({
+    id: r.id,
+    nome: r.nome,
+    empresa: r.empresa ?? null,
+    cidade: r.cidade ?? null,
+    estado: r.estado ?? null,
+    phone: r.phone ?? null,
+    email: r.email ?? null,
+    published: r.published ?? true,
+    created_at: r.createdAt,
+  });
+}
+
+export async function deleteRepresentanteDb(id: string): Promise<void> {
+  const sb = createAdminSupabase();
+  await sb.from("representantes").delete().eq("id", id);
+}
+
+function rowToRepresentante(r: any): Representante {
+  return {
+    id: r.id,
+    nome: r.nome,
+    empresa: r.empresa ?? undefined,
+    cidade: r.cidade ?? undefined,
+    estado: r.estado ?? undefined,
+    phone: r.phone ?? undefined,
+    email: r.email ?? undefined,
+    published: r.published ?? true,
+    createdAt: r.created_at,
+  };
+}
 
 // ────────────────────────────────────────────────────────────
 // CATEGORIES

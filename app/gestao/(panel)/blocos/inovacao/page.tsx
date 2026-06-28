@@ -7,15 +7,15 @@ export const dynamic = "force-dynamic";
 
 export default async function InovacaoBlocoPage() {
   const settings = await getSettings();
-  const images = settings.inovacao?.images ?? DEFAULT_STORE.settings.inovacao.images;
+  const inv = settings.inovacao ?? DEFAULT_STORE.settings.inovacao;
 
   return (
     <>
       <PageHeader
         title="Bloco — Inovação no setor moveleiro"
-        subtitle="Galeria de imagens exibida à direita do texto. A primeira é a que abre; use as setas no site para navegar."
+        subtitle="Texto à esquerda e galeria à direita."
       />
-      <InovacaoEditor initialImages={images} />
+      <InovacaoEditor initial={inv} />
     </>
   );
 }

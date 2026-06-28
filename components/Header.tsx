@@ -12,7 +12,7 @@ const NAV = [
   { label: "A BLASS", href: "/#sobre" },
   { label: "PRODUTOS", href: "/produtos" },
   { label: "BLOG", href: "/blog" },
-  { label: "REVENDAS", href: "/#contato" },
+  { label: "REPRESENTANTES", href: "/representantes" },
   { label: "CONTATO", href: "/#contato" },
 ];
 
@@ -48,7 +48,7 @@ export default function Header({ settings }: { settings: SiteSettings }) {
         <nav className="w-full max-w-4xl rounded-full border border-cream-light/25 bg-night-deep/40 backdrop-blur-md px-4 md:px-7 h-14 flex items-center justify-between gap-3">
           {/* Logo texto */}
           <Link href="/" aria-label="Início — Blass" className="flex-shrink-0">
-            <img src="/novo/logo-menu.webp" alt="Blass" className="h-4 md:h-[18px] w-auto" />
+            <img src="/novo/logo-menu.webp" alt="Blass" className="h-6 md:h-7 w-auto" />
           </Link>
 
           {/* Itens (desktop) */}

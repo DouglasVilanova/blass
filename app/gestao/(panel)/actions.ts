@@ -12,10 +12,64 @@ import {
   upsertBlogCategory, deleteBlogCategoryDb,
   getCategories, getBlogCategories,
   getBlogPosts, countFeaturedProducts,
+  upsertRepresentante, deleteRepresentanteDb,
 } from "@/lib/db";
 
 const MAX_FEATURED = 6;
-import type { BlogCategory, BlogPost, Category, Product, ProductAttribute } from "@/lib/types";
+import type { BlogCategory, BlogPost, Category, Product, ProductAttribute, Representante } from "@/lib/types";
+
+// ────────────────────────────────────────────────────────────
+// REPRESENTANTES
+// ────────────────────────────────────────────────────────────
+
+export type RepInput = {
+  id?: string;
+  nome: string;
+  empresa?: string;
+  cidade?: string;
+  estado?: string;
+  phone?: string;
+  email?: string;
+  published?: boolean;
+  createdAt?: string;
+};
+
+export async function saveRepresentante(input: RepInput): Promise<{ ok: true; rep: Representante } | { error: string }> {
+  try {
+    await requireAdmin();
+    const nome = (input.nome || "").trim();
+    if (!nome) return { error: "Nome é obrigatório." };
+    const rep: Representante = {
+      id: input.id || newId(),
+      nome,
+      empresa: input.empresa?.trim() || undefined,
+      cidade: input.cidade?.trim() || undefined,
+      estado: input.estado?.trim().toUpperCase() || undefined,
+      phone: input.phone?.trim() || undefined,
+      email: input.email?.trim() || undefined,
+      published: input.published ?? true,
+      createdAt: input.createdAt || new Date().toISOString(),
+    };
+    await upsertRepresentante(rep);
+    revalidatePath("/representantes");
+    revalidatePath("/gestao/representantes");
+    return { ok: true, rep };
+  } catch (e: any) {
+    return { error: e?.message ?? "Erro ao salvar representante" };
+  }
+}
+
+export async function deleteRepresentante(id: string): Promise<{ ok: true } | { error: string }> {
+  try {
+    await requireAdmin();
+    await deleteRepresentanteDb(id);
+    revalidatePath("/representantes");
+    revalidatePath("/gestao/representantes");
+    return { ok: true };
+  } catch (e: any) {
+    return { error: e?.message ?? "Erro ao excluir" };
+  }
+}
 
 // ────────────────────────────────────────────────────────────
 // HELPERS

@@ -11,7 +11,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-brown flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-10">
-          <img src="/brand/logo-negativo.webp" alt="Blass" width={180} height={52} />
+          <img src="/novo/logo-menu.webp" alt="Blass" className="h-7 w-auto" />
           <div className="text-[10px] tracking-[0.4em] text-orange mt-3">GESTÃO</div>
         </div>
         <Suspense>

@@ -16,7 +16,7 @@ export default function ProductGallery({
   if (images.length === 0) {
     return (
       <div className="aspect-square bg-cream-dark border border-brown/10 flex items-center justify-center text-brown/20">
-        <span className="font-display text-6xl tracking-widest opacity-30">B</span>
+        <span className="font-exo font-bold text-6xl tracking-widest opacity-30">B</span>
       </div>
     );
   }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Boxes, FileText, Home, Tags, Eye, Code2, LogOut, Image as ImageIcon, Phone, Type } from "lucide-react";
+import { Boxes, FileText, Home, Tags, Eye, Code2, LogOut, Image as ImageIcon, Phone, Type, Users } from "lucide-react";
 import { ToastProvider } from "@/components/gestao/Toast";
 import { getSettings } from "@/lib/settings";
 import { cookies } from "next/headers";
@@ -22,6 +22,7 @@ const BLOCOS: Item[] = [
   { href: "/gestao/blocos/categorias-cards", label: "Cards categoria (LED)", icon: Boxes },
   { href: "/gestao/blocos/galeria", label: "Galeria (duas décadas)", icon: ImageIcon },
   { href: "/gestao/blocos/pills", label: "Faixa de palavras", icon: Type },
+  { href: "/gestao/blocos/catalogo", label: "Página de Produtos (topo)", icon: Boxes },
   { href: "/gestao/blocos/rodape", label: "Rodapé / Contato", icon: Phone },
 ];
 
@@ -29,6 +30,7 @@ const GERAL: Item[] = [
   { href: "/gestao", label: "Painel", icon: Home },
   { href: "/gestao/produtos", label: "Produtos", icon: Boxes },
   { href: "/gestao/categorias", label: "Categorias", icon: Tags },
+  { href: "/gestao/representantes", label: "Representantes", icon: Users },
   { href: "/gestao/blog", label: "Blog", icon: FileText },
   { href: "/gestao/visibilidade", label: "Visibilidade", icon: Eye },
   { href: "/gestao/seo", label: "SEO", icon: Code2 },

@@ -34,7 +34,7 @@ export default function ProductCard({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-brown/20">
-            <span className="text-4xl font-display tracking-widest opacity-30">B</span>
+            <span className="text-4xl font-exo font-bold tracking-widest opacity-30">B</span>
           </div>
         )}
         {product.featured && (

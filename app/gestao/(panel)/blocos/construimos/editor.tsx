@@ -3,16 +3,29 @@
 import { useState } from "react";
 import { RotateCcw, Save } from "lucide-react";
 import ConstruimosCard from "@/components/sections/ConstruimosCard";
+import { Field, inputCls } from "@/components/gestao/Field";
 import { useToast } from "@/components/gestao/Toast";
 import { saveSection } from "@/app/gestao/(panel)/settings-actions";
 import { DEFAULT_STORE } from "@/lib/defaults";
-import type { SiteLayouts } from "@/lib/types";
+import type { SiteLayouts, SiteSettings } from "@/lib/types";
 
 type Construimos = SiteLayouts["construimos"];
 
-export default function ConstruimosEditor({ initialLayouts }: { initialLayouts: SiteLayouts }) {
+function splitParas(s: string): string[] {
+  return s.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+}
+
+export default function ConstruimosEditor({
+  initialLayouts,
+  initialTexto,
+}: {
+  initialLayouts: SiteLayouts;
+  initialTexto: SiteSettings["construimos"];
+}) {
   const { push } = useToast();
   const [c, setC] = useState<Construimos>(initialLayouts.construimos);
+  const [title, setTitle] = useState(initialTexto.title);
+  const [paras, setParas] = useState(initialTexto.paragraphs.join("\n\n"));
   const [saving, setSaving] = useState(false);
 
   function setLayer(layer: "mao" | "brilho", key: "x" | "y" | "w", value: number) {
@@ -25,14 +38,27 @@ export default function ConstruimosEditor({ initialLayouts }: { initialLayouts: 
 
   async function save() {
     setSaving(true);
-    const res = await saveSection("layouts", { ...initialLayouts, construimos: c });
+    const r1 = await saveSection("layouts", { ...initialLayouts, construimos: c });
+    const r2 = await saveSection("construimos", { title, paragraphs: splitParas(paras) });
     setSaving(false);
-    if ("error" in res) push(res.error, "error");
-    else push("Posições salvas! Recarregue o site para ver.");
+    if ("error" in r1) return push(r1.error, "error");
+    if ("error" in r2) return push(r2.error, "error");
+    push("Bloco salvo! Recarregue o site para ver.");
   }
 
   return (
     <div className="space-y-6 max-w-5xl">
+      {/* Texto */}
+      <div className="bg-white border border-brown/10 rounded-xl p-6 space-y-4">
+        <h2 className="font-exo font-bold text-lg text-brown">Texto</h2>
+        <Field label="Título" hint='Use **palavra** para destacar em laranja. Ex: A **BLASS** QUE CONSTRUÍMOS'>
+          <input className={inputCls} value={title} onChange={(e) => setTitle(e.target.value)} />
+        </Field>
+        <Field label="Parágrafos" hint="Separe cada parágrafo com uma linha em branco. Use **texto** para negrito.">
+          <textarea className={inputCls + " min-h-[180px]"} value={paras} onChange={(e) => setParas(e.target.value)} />
+        </Field>
+      </div>
+
       {/* Preview */}
       <div className="bg-[#3d2616] rounded-lg p-10 overflow-hidden">
         <div className="max-w-[560px] mx-auto">

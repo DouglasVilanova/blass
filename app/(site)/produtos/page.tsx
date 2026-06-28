@@ -4,6 +4,7 @@ import type { Product } from "@/lib/types";
 import ProductCard from "@/components/site/ProductCard";
 import ProductFilters from "@/components/site/ProductFilters";
 import { getAdminEmail } from "@/lib/session-server";
+import { getSettings } from "@/lib/settings";
 import { parseAttrParams, matchesAttrSelection, buildFacets } from "@/lib/attributes";
 import { LayoutGrid, List } from "lucide-react";
 
@@ -74,12 +75,14 @@ function filterProducts(products: Product[], sp: PageProps["searchParams"]): Pro
 }
 
 export default async function ProductsPage({ searchParams }: PageProps) {
-  const [allProducts, categories, adminEmail] = await Promise.all([
+  const [allProducts, categories, adminEmail, settings] = await Promise.all([
     getProducts(true), // published only
     getCategories(),
     getAdminEmail(),
+    getSettings(),
   ]);
   const isAdmin = !!adminEmail;
+  const cat = settings.catalogo;
 
   const filtered = filterProducts(allProducts, searchParams);
 
@@ -102,12 +105,12 @@ export default async function ProductsPage({ searchParams }: PageProps) {
       {/* Page header */}
       <div className="bg-brown text-cream-light py-10">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="text-xs tracking-widest text-orange mb-1">CATÁLOGO</div>
-          <h1 className="font-display text-4xl">
-            {activeCatName ?? "Todos os Produtos"}
+          <div className="text-xs tracking-widest text-orange mb-1">{cat.tag}</div>
+          <h1 className="font-exo font-bold text-4xl">
+            {activeCatName ?? cat.title}
           </h1>
           <p className="text-cream-light/60 text-sm mt-2">
-            Iluminação e componentes para móveis e ambientes.
+            {cat.subtitle}
           </p>
         </div>
       </div>
@@ -170,7 +173,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
             {/* Grid or empty */}
             {filtered.length === 0 ? (
               <div className="py-24 text-center">
-                <div className="font-display text-3xl text-brown/30">Nenhum produto encontrado</div>
+                <div className="font-exo font-bold text-3xl text-brown/30">Nenhum produto encontrado</div>
                 <p className="text-sm text-brown/50 mt-2">Tente outros filtros.</p>
               </div>
             ) : (

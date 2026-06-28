@@ -2,6 +2,7 @@ import Link from "next/link";
 import { readStore } from "@/lib/store";
 import { createBlogCategory, deleteBlogCategory, deletePost } from "../actions";
 import { Field, inputCls } from "@/components/gestao/Field";
+import DeleteButton from "@/components/gestao/DeleteButton";
 
 export default async function BlogAdmin() {
   const { blogPosts, blogCategories } = await readStore();
@@ -16,11 +17,15 @@ export default async function BlogAdmin() {
         <h2 className="font-display text-xl mb-4">Categorias do blog</h2>
         <div className="flex flex-wrap gap-2">
           {blogCategories.map((c) => (
-            <form key={c.slug} action={async () => { "use server"; await deleteBlogCategory(c.slug); }} className="inline">
-              <button className="group flex items-center gap-2 text-xs px-3 py-1 bg-white border border-brown/20 hover:border-red-500 hover:text-red-600">
-                {c.name} <span className="text-brown/40 group-hover:text-red-600">×</span>
-              </button>
-            </form>
+            <DeleteButton
+              key={c.slug}
+              action={deleteBlogCategory.bind(null, c.slug)}
+              title={`Excluir categoria "${c.name}"?`}
+              description="A categoria será removida do blog."
+              className="group flex items-center gap-2 text-xs px-3 py-1 bg-white border border-brown/20 hover:border-red-500 hover:text-red-600"
+            >
+              {c.name} <span className="text-brown/40 group-hover:text-red-600">×</span>
+            </DeleteButton>
           ))}
         </div>
         <form action={createBlogCategory} className="mt-4 flex gap-2">
@@ -51,9 +56,14 @@ export default async function BlogAdmin() {
                   <td className="p-3">{p.published ? <span className="text-orange">publicado</span> : <span className="text-brown/40">rascunho</span>}</td>
                   <td className="p-3 text-right whitespace-nowrap">
                     <Link href={`/gestao/blog/${p.id}`} className="text-orange hover:underline mr-4">Editar</Link>
-                    <form action={async () => { "use server"; await deletePost(p.id); }} className="inline">
-                      <button className="text-red-600 hover:underline">Excluir</button>
-                    </form>
+                    <DeleteButton
+                      action={deletePost.bind(null, p.id)}
+                      title={`Excluir "${p.title}"?`}
+                      description="O post e sua imagem de capa serão removidos."
+                      className="text-red-600 hover:underline"
+                    >
+                      Excluir
+                    </DeleteButton>
                   </td>
                 </tr>
               );

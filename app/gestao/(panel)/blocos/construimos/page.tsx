@@ -8,14 +8,15 @@ export const dynamic = "force-dynamic";
 export default async function ConstruimosBlocoPage() {
   const settings = await getSettings();
   const layouts = settings.layouts ?? DEFAULT_STORE.settings.layouts;
+  const texto = settings.construimos ?? DEFAULT_STORE.settings.construimos;
 
   return (
     <>
       <PageHeader
         title="Bloco — A Blass que construímos"
-        subtitle="Posicione a mão e o brilho sobre o prédio. As mudanças aparecem no preview e são salvas no site."
+        subtitle="Edite o texto e posicione a mão e o brilho sobre o prédio."
       />
-      <ConstruimosEditor initialLayouts={layouts} />
+      <ConstruimosEditor initialLayouts={layouts} initialTexto={texto} />
     </>
   );
 }

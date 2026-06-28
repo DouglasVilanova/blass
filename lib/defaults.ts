@@ -60,8 +60,20 @@ export const DEFAULT_STORE: Store = {
         brilho: { x: 72, y: 92, w: 60 },
       },
     },
+    construimos: {
+      title: "A **BLASS** QUE CONSTRUÍMOS",
+      paragraphs: [
+        "Desde o início, a Blass foi construída com propósito, técnica e visão de futuro. Fundada por **Marcos Verona** em Caxias do Sul, a empresa cresceu movida pela dedicação de uma equipe comprometida em entregar qualidade, eficiência e soluções que fazem a diferença no dia a dia de cada projeto.",
+        "Ao longo de **mais de duas décadas**, evoluímos constantemente, investindo em estrutura, tecnologia e desenvolvimento para transformar ideias em soluções com alto padrão de acabamento e desempenho. Em 2014, transferimos nossa operação para Flores da Cunha, consolidando nossa estrutura em um novo pavilhão moderno e preparado para acompanhar a nova fase.",
+      ],
+    },
     inovacao: {
       images: ["/novo/carrossel.webp"],
+      title: "**INOVAÇÃO** NO SETOR MOVELEIRO",
+      paragraphs: [
+        "Na Blass, inovação não é apenas acompanhar o mercado, mas enxergar novas possibilidades antes mesmo que elas se tornem tendência. Esse olhar está presente em cada detalhe, impulsionando o desenvolvimento de produtos que unem funcionalidade, estética e confiabilidade.",
+        "Hoje, reunimos em um só lugar uma **linha completa de componentes, iluminação e soluções decorativas que acompanham a evolução dos espaços contemporâneos**. Em todo o Brasil, seguimos evoluindo, levando inovação, qualidade e identidade para diferentes projetos e ambientes.",
+      ],
     },
     galeria: {
       images: [
@@ -97,8 +109,13 @@ export const DEFAULT_STORE: Store = {
       cards: [
         { label: "ILUMINAÇÃO", href: "/produtos?cat=iluminacao", off: "/novo/cat-iluminacao-off.webp", on: "/novo/cat-iluminacao-on.webp" },
         { label: "COMPONENTES", href: "/produtos?cat=componentes", off: "/novo/cat-componentes-off.webp", on: "/novo/cat-componentes-on.webp" },
-        { label: "ACESSÓRIOS", href: "/produtos?cat=acessorios", off: "/novo/cat-acessorios-off.webp", on: "/novo/cat-acessorios-on.webp" },
+        { label: "ACESSÓRIOS", href: "/produtos?sub=acessorios", off: "/novo/cat-acessorios-off.webp", on: "/novo/cat-acessorios-on.webp" },
       ],
+    },
+    catalogo: {
+      tag: "CATÁLOGO",
+      title: "Todos os Produtos",
+      subtitle: "Iluminação e componentes para móveis e ambientes.",
     },
     contact: {
       phone: "(54) 3022-9600",

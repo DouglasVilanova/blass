@@ -43,6 +43,18 @@ export type BlogPost = {
 
 export type BlogCategory = { slug: string; name: string };
 
+export type Representante = {
+  id: string;
+  nome: string;
+  empresa?: string;
+  cidade?: string;
+  estado?: string;
+  phone?: string;
+  email?: string;
+  published?: boolean;
+  createdAt: string;
+};
+
 export type SiteVisibility = {
   stats: boolean;
   tagline: boolean;
@@ -93,11 +105,13 @@ export type SiteSettings = {
   visibility: SiteVisibility;
   seo: SiteSeo;
   layouts: SiteLayouts;
-  inovacao: { images: string[] };
+  construimos: { title: string; paragraphs: string[] };
+  inovacao: { images: string[]; title: string; paragraphs: string[] };
   galeria: { images: string[] };
   pills: { words: string[] };
   tendencias: { text: string; highlight: string; image: string };
   categoriasCards: { cards: { label: string; href: string; off: string; on: string }[] };
+  catalogo: { tag: string; title: string; subtitle: string };
 };
 
 export type Store = {
