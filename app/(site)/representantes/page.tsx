@@ -9,12 +9,14 @@ export const metadata = { title: "Representantes — Blass" };
 export default async function RepresentantesPage() {
   const reps: Representante[] = await getRepresentantes(true).catch(() => []);
 
-  // Agrupa por estado (UF)
+  // Agrupa por estado (UF) — um representante pode atender vários estados
   const byEstado = new Map<string, Representante[]>();
   for (const r of reps) {
-    const uf = r.estado || "Outros";
-    if (!byEstado.has(uf)) byEstado.set(uf, []);
-    byEstado.get(uf)!.push(r);
+    const ufs = r.estados.length ? r.estados : ["Outros"];
+    for (const uf of ufs) {
+      if (!byEstado.has(uf)) byEstado.set(uf, []);
+      byEstado.get(uf)!.push(r);
+    }
   }
   const estados = [...byEstado.keys()].sort();
 
@@ -46,25 +48,25 @@ export default async function RepresentantesPage() {
                     <div key={r.id} className="rounded-2xl border border-night-line bg-night-soft p-5">
                       <div className="font-exo font-semibold text-lg text-cream-light">{r.empresa || r.nome}</div>
                       {r.empresa && <div className="text-cream-light/70 text-sm">{r.nome}</div>}
-                      {(r.cidade || r.estado) && (
+                      {r.cidade && (
                         <div className="flex items-center gap-1.5 text-cream-light/60 text-sm mt-2">
                           <MapPin className="w-4 h-4 text-orange" />
-                          {[r.cidade, r.estado].filter(Boolean).join(" / ")}
+                          {r.cidade}
                         </div>
                       )}
                       <div className="mt-4 flex flex-col gap-2">
-                        {r.phone && (
-                          <a href={waLink(r.phone, `Olá! Sou cliente e gostaria de falar com o representante ${r.nome}.`)}
+                        {r.phones.map((ph) => (
+                          <a key={ph} href={waLink(ph, `Olá! Sou cliente e gostaria de falar com o representante ${r.nome}.`)}
                              target="_blank" rel="noreferrer"
                              className="inline-flex items-center gap-2 rounded-full bg-orange/95 hover:bg-orange text-white text-sm px-4 py-2 transition-colors w-max">
-                            <Phone className="w-4 h-4" /> {r.phone}
+                            <Phone className="w-4 h-4" /> {ph}
                           </a>
-                        )}
-                        {r.email && (
-                          <a href={`mailto:${r.email}`} className="inline-flex items-center gap-2 text-cream-light/70 hover:text-orange text-sm">
-                            <Mail className="w-4 h-4" /> {r.email}
+                        ))}
+                        {r.emails.map((em) => (
+                          <a key={em} href={`mailto:${em}`} className="inline-flex items-center gap-2 text-cream-light/70 hover:text-orange text-sm break-all">
+                            <Mail className="w-4 h-4 flex-shrink-0" /> {em}
                           </a>
-                        )}
+                        ))}
                       </div>
                     </div>
                   ))}

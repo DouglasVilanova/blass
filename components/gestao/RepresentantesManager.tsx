@@ -8,7 +8,7 @@ import { useConfirm } from "./ConfirmDialog";
 import { saveRepresentante, deleteRepresentante, type RepInput } from "@/app/gestao/(panel)/actions";
 import type { Representante } from "@/lib/types";
 
-const EMPTY: RepInput = { nome: "", empresa: "", cidade: "", estado: "", phone: "", email: "", published: true };
+const EMPTY: RepInput = { nome: "", empresa: "", cidade: "", estados: [], phones: [], emails: [], published: true };
 
 export default function RepresentantesManager({ initial }: { initial: Representante[] }) {
   const { push } = useToast();
@@ -17,9 +17,56 @@ export default function RepresentantesManager({ initial }: { initial: Representa
   const [form, setForm] = useState<RepInput | null>(null);
   const [saving, setSaving] = useState(false);
 
-  function openNew() { setForm({ ...EMPTY }); }
+  const [ufInput, setUfInput] = useState("");
+
+  const [emailInput, setEmailInput] = useState("");
+  const [phoneInput, setPhoneInput] = useState("");
+
+  function openNew() { setForm({ ...EMPTY }); setUfInput(""); setEmailInput(""); setPhoneInput(""); }
   function openEdit(r: Representante) {
-    setForm({ id: r.id, nome: r.nome, empresa: r.empresa ?? "", cidade: r.cidade ?? "", estado: r.estado ?? "", phone: r.phone ?? "", email: r.email ?? "", published: r.published ?? true, createdAt: r.createdAt });
+    setForm({ id: r.id, nome: r.nome, empresa: r.empresa ?? "", cidade: r.cidade ?? "", estados: r.estados ?? [], phones: r.phones ?? [], emails: r.emails ?? [], published: r.published ?? true, createdAt: r.createdAt });
+    setUfInput("");
+    setEmailInput("");
+    setPhoneInput("");
+  }
+
+  function addPhone() {
+    if (!form) return;
+    const ph = phoneInput.trim();
+    if (!ph) return;
+    const list = form.phones ?? [];
+    if (!list.includes(ph)) setForm({ ...form, phones: [...list, ph] });
+    setPhoneInput("");
+  }
+  function removePhone(ph: string) {
+    if (!form) return;
+    setForm({ ...form, phones: (form.phones ?? []).filter((p) => p !== ph) });
+  }
+
+  function addUf() {
+    if (!form) return;
+    const uf = ufInput.trim().toUpperCase().slice(0, 2);
+    if (!uf) return;
+    const list = form.estados ?? [];
+    if (!list.includes(uf)) setForm({ ...form, estados: [...list, uf] });
+    setUfInput("");
+  }
+  function removeUf(uf: string) {
+    if (!form) return;
+    setForm({ ...form, estados: (form.estados ?? []).filter((e) => e !== uf) });
+  }
+
+  function addEmail() {
+    if (!form) return;
+    const em = emailInput.trim();
+    if (!em) return;
+    const list = form.emails ?? [];
+    if (!list.includes(em)) setForm({ ...form, emails: [...list, em] });
+    setEmailInput("");
+  }
+  function removeEmail(em: string) {
+    if (!form) return;
+    setForm({ ...form, emails: (form.emails ?? []).filter((e) => e !== em) });
   }
 
   async function save() {
@@ -31,7 +78,7 @@ export default function RepresentantesManager({ initial }: { initial: Representa
     setList((prev) => {
       const without = prev.filter((r) => r.id !== res.rep.id);
       return [...without, res.rep].sort((a, b) =>
-        (a.estado ?? "").localeCompare(b.estado ?? "") || (a.cidade ?? "").localeCompare(b.cidade ?? "") || a.nome.localeCompare(b.nome)
+        (a.estados[0] ?? "").localeCompare(b.estados[0] ?? "") || (a.cidade ?? "").localeCompare(b.cidade ?? "") || a.nome.localeCompare(b.nome)
       );
     });
     setForm(null);
@@ -60,17 +107,88 @@ export default function RepresentantesManager({ initial }: { initial: Representa
             <Field label="Empresa" hint="Razão/nome fantasia. Ex: Silva Representações">
               <input className={inputCls} value={form.empresa} onChange={(e) => setForm({ ...form, empresa: e.target.value })} />
             </Field>
-            <Field label="Cidade" hint="Ex: Caxias do Sul">
+            <Field label="Cidade(s)" hint="Pode listar várias. Ex: Vila Velha, Serra, Vitória">
               <input className={inputCls} value={form.cidade} onChange={(e) => setForm({ ...form, cidade: e.target.value })} />
             </Field>
-            <Field label="Estado (UF)" hint="Sigla com 2 letras. Ex: RS">
-              <input className={inputCls} maxLength={2} value={form.estado} onChange={(e) => setForm({ ...form, estado: e.target.value.toUpperCase() })} />
+            <Field label="Estados (UF)" hint="Adicione um ou mais. Digite a sigla e Enter. Ex: ES, RJ">
+              <div>
+                {(form.estados?.length ?? 0) > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {form.estados!.map((uf) => (
+                      <span key={uf} className="flex items-center gap-1 text-xs bg-cream-dark border border-brown/20 px-2 py-1 rounded">
+                        {uf}
+                        <button type="button" onClick={() => removeUf(uf)} className="text-brown/40 hover:text-red-600" aria-label={`Remover ${uf}`}>
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <input
+                    className={inputCls + " uppercase"}
+                    maxLength={2}
+                    value={ufInput}
+                    onChange={(e) => setUfInput(e.target.value.toUpperCase())}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addUf(); } }}
+                    placeholder="UF"
+                  />
+                  <button type="button" onClick={addUf} className="btn-outline text-xs px-3 whitespace-nowrap">Adicionar</button>
+                </div>
+              </div>
             </Field>
-            <Field label="WhatsApp / Telefone" hint="Com DDD. Ex: 54 99999-9999">
-              <input className={inputCls} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <Field label="WhatsApp / Telefones" hint="Adicione um ou mais. Com DDD. Digite e Enter. Ex: 54 99999-9999">
+              <div>
+                {(form.phones?.length ?? 0) > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {form.phones!.map((ph) => (
+                      <span key={ph} className="flex items-center gap-1 text-xs bg-cream-dark border border-brown/20 px-2 py-1 rounded">
+                        {ph}
+                        <button type="button" onClick={() => removePhone(ph)} className="text-brown/40 hover:text-red-600" aria-label={`Remover ${ph}`}>
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <input
+                    className={inputCls}
+                    value={phoneInput}
+                    onChange={(e) => setPhoneInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addPhone(); } }}
+                    placeholder="54 99999-9999"
+                  />
+                  <button type="button" onClick={addPhone} className="btn-outline text-xs px-3 whitespace-nowrap">Adicionar</button>
+                </div>
+              </div>
             </Field>
-            <Field label="E-mail (opcional)" hint="Ex: contato@empresa.com.br">
-              <input className={inputCls} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            <Field label="E-mails" hint="Adicione um ou mais. Digite e Enter. Ex: comercial@empresa.com.br">
+              <div>
+                {(form.emails?.length ?? 0) > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {form.emails!.map((em) => (
+                      <span key={em} className="flex items-center gap-1 text-xs bg-cream-dark border border-brown/20 px-2 py-1 rounded">
+                        {em}
+                        <button type="button" onClick={() => removeEmail(em)} className="text-brown/40 hover:text-red-600" aria-label={`Remover ${em}`}>
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    className={inputCls}
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addEmail(); } }}
+                    placeholder="email@empresa.com.br"
+                  />
+                  <button type="button" onClick={addEmail} className="btn-outline text-xs px-3 whitespace-nowrap">Adicionar</button>
+                </div>
+              </div>
             </Field>
           </div>
           <label className="flex items-center gap-3 cursor-pointer">
@@ -108,8 +226,8 @@ export default function RepresentantesManager({ initial }: { initial: Representa
                 </div>
                 <div className="text-xs text-brown/50 flex items-center gap-1 mt-0.5">
                   <MapPin className="w-3 h-3" />
-                  {[r.cidade, r.estado].filter(Boolean).join(" / ") || "—"}
-                  {r.phone && <span className="ml-2">· {r.phone}</span>}
+                  {[r.cidade, r.estados.join(", ")].filter(Boolean).join(" — ") || "—"}
+                  {r.phones.length > 0 && <span className="ml-2">· {r.phones.join(" / ")}</span>}
                 </div>
               </div>
               <button onClick={() => openEdit(r)} className="text-brown/40 hover:text-orange p-1.5" aria-label="Editar"><Pencil className="w-4 h-4" /></button>

@@ -27,9 +27,9 @@ export type RepInput = {
   nome: string;
   empresa?: string;
   cidade?: string;
-  estado?: string;
-  phone?: string;
-  email?: string;
+  estados?: string[];
+  phones?: string[];
+  emails?: string[];
   published?: boolean;
   createdAt?: string;
 };
@@ -39,14 +39,23 @@ export async function saveRepresentante(input: RepInput): Promise<{ ok: true; re
     await requireAdmin();
     const nome = (input.nome || "").trim();
     if (!nome) return { error: "Nome é obrigatório." };
+    const estados = (input.estados ?? [])
+      .map((e) => e.trim().toUpperCase())
+      .filter(Boolean);
+    const emails = (input.emails ?? [])
+      .map((e) => e.trim())
+      .filter(Boolean);
+    const phones = (input.phones ?? [])
+      .map((e) => e.trim())
+      .filter(Boolean);
     const rep: Representante = {
       id: input.id || newId(),
       nome,
       empresa: input.empresa?.trim() || undefined,
       cidade: input.cidade?.trim() || undefined,
-      estado: input.estado?.trim().toUpperCase() || undefined,
-      phone: input.phone?.trim() || undefined,
-      email: input.email?.trim() || undefined,
+      estados,
+      phones,
+      emails,
       published: input.published ?? true,
       createdAt: input.createdAt || new Date().toISOString(),
     };

@@ -48,9 +48,9 @@ export type Representante = {
   nome: string;
   empresa?: string;
   cidade?: string;
-  estado?: string;
-  phone?: string;
-  email?: string;
+  estados: string[];
+  phones: string[];
+  emails: string[];
   published?: boolean;
   createdAt: string;
 };
