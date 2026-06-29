@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Field, inputCls } from "./Field";
 import ImageUpload from "./ImageUpload";
+import RichTextEditor from "./RichTextEditor";
 import type { BlogCategory, BlogPost } from "@/lib/types";
 
 export default function PostForm({
@@ -15,11 +16,13 @@ export default function PostForm({
   initial?: Partial<BlogPost>;
 }) {
   const [coverImage, setCoverImage] = useState(initial?.coverImage ?? "");
+  const [body, setBody] = useState(initial?.body ?? "");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     fd.set("coverImage", coverImage);
+    fd.set("body", body);
     await action(fd);
   }
 
@@ -59,7 +62,8 @@ export default function PostForm({
           <Field label="Resumo"><input name="excerpt" className={inputCls} defaultValue={initial?.excerpt} /></Field>
         </div>
         <div className="md:col-span-2">
-          <Field label="Corpo do post"><textarea name="body" className={inputCls + " min-h-[300px]"} defaultValue={initial?.body} /></Field>
+          <label className="block text-xs tracking-widest text-brown/70 font-semibold uppercase mb-2">Corpo do post</label>
+          <RichTextEditor value={body} onChange={setBody} />
         </div>
       </section>
 

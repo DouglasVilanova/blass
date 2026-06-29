@@ -44,8 +44,8 @@ export default async function RepresentantesPage() {
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {byEstado.get(uf)!.map((r) => (
                     <div key={r.id} className="rounded-2xl border border-night-line bg-night-soft p-5">
-                      <div className="font-exo font-semibold text-lg text-cream-light">{r.nome}</div>
-                      {r.empresa && <div className="text-cream-light/70 text-sm">{r.empresa}</div>}
+                      <div className="font-exo font-semibold text-lg text-cream-light">{r.empresa || r.nome}</div>
+                      {r.empresa && <div className="text-cream-light/70 text-sm">{r.nome}</div>}
                       {(r.cidade || r.estado) && (
                         <div className="flex items-center gap-1.5 text-cream-light/60 text-sm mt-2">
                           <MapPin className="w-4 h-4 text-orange" />
