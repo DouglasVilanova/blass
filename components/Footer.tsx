@@ -6,8 +6,7 @@ const MENU = [
   { label: "HOME", href: "/" },
   { label: "SOBRE", href: "/#sobre" },
   { label: "PRODUTOS", href: "/produtos" },
-  { label: "QUERO COMPRAR", href: "/#contato" },
-  { label: "CONTATO", href: "/#contato" },
+  { label: "REPRESENTANTES", href: "/representantes" },
 ];
 
 export default function Footer({ settings }: { settings: SiteSettings }) {

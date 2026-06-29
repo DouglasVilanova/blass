@@ -13,7 +13,6 @@ const NAV = [
   { label: "PRODUTOS", href: "/produtos" },
   { label: "BLOG", href: "/blog" },
   { label: "REPRESENTANTES", href: "/representantes" },
-  { label: "CONTATO", href: "/#contato" },
 ];
 
 function WhatsappIcon({ className }: { className?: string }) {
