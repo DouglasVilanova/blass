@@ -10,7 +10,7 @@ export default async function BlogIndex() {
   return (
     <section className="bg-cream py-16">
       <div className="mx-auto max-w-6xl px-6">
-        <h1 className="font-display text-4xl text-brown">Blog</h1>
+        <h1 className="font-exo font-bold text-4xl text-brown">Blog</h1>
         <p className="text-brown/80 mt-2">Conteúdos sobre iluminação, projetos e tendências.</p>
 
         <div className="mt-10 grid md:grid-cols-3 gap-8">
@@ -23,7 +23,7 @@ export default async function BlogIndex() {
                 </div>
                 <div className="p-5">
                   {cat && <div className="text-[10px] tracking-widest text-orange">{cat.name.toUpperCase()}</div>}
-                  <h3 className="font-display text-xl text-brown mt-1">{p.title}</h3>
+                  <h3 className="font-exo font-semibold text-xl text-brown mt-1">{p.title}</h3>
                   {p.excerpt && <p className="text-sm text-brown/70 mt-2 line-clamp-3">{p.excerpt}</p>}
                 </div>
               </Link>
