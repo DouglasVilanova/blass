@@ -3,6 +3,7 @@ import { getCategories, getProducts } from "@/lib/db";
 import type { Product } from "@/lib/types";
 import ProductCard from "@/components/site/ProductCard";
 import ProductFilters from "@/components/site/ProductFilters";
+import SortSelect from "@/components/site/SortSelect";
 import { getAdminEmail } from "@/lib/session-server";
 import { getSettings } from "@/lib/settings";
 import { parseAttrParams, matchesAttrSelection, buildFacets } from "@/lib/attributes";
@@ -106,7 +107,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     : null;
 
   return (
-    <div className="bg-cream min-h-screen">
+    <div className="bg-cream min-h-screen text-brown">
       {/* Page header */}
       <div className="bg-brown text-cream-light py-10">
         <div className="mx-auto max-w-7xl px-6">
@@ -147,7 +148,14 @@ export default async function ProductsPage({ searchParams }: PageProps) {
                 )}
               </div>
 
-              {/* Active filter pills */}
+              {/* Ordenar — canto superior direito */}
+              <Suspense>
+                <SortSelect />
+              </Suspense>
+            </div>
+
+            {/* Active filter pills */}
+            <div className="mb-6">
               <div className="flex flex-wrap gap-2">
                 {arr(searchParams.sub).map((s) => {
                   const cat = categories.find((c) => c.slug === searchParams.cat);

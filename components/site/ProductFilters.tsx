@@ -22,7 +22,6 @@ export default function ProductFilters({ categories, facets, total, filtered }: 
   const subs = sp.getAll("sub");
   const attrs = sp.getAll("attr");
   const featured = sp.get("featured") === "1";
-  const sort = sp.get("sort") ?? "newest";
   // "Acessórios" não é categoria real — é a subcategoria "acessorios" de iluminação/componentes
   const isAcessorios = subs.includes("acessorios");
 
@@ -113,21 +112,6 @@ export default function ProductFilters({ categories, facets, total, filtered }: 
             className="w-full pl-9 pr-3 py-2 border border-brown/20 bg-white text-sm focus:outline-none focus:border-orange"
           />
         </div>
-      </div>
-
-      {/* Ordenar */}
-      <div className="space-y-2">
-        <label className="text-xs tracking-widest text-brown/60 font-semibold uppercase">Ordenar</label>
-        <select
-          value={sort}
-          onChange={(e) => set("sort", e.target.value)}
-          className="w-full border border-brown/20 bg-white text-sm px-3 py-2 focus:outline-none focus:border-orange"
-        >
-          <option value="newest">Mais recentes</option>
-          <option value="az">Nome A–Z</option>
-          <option value="za">Nome Z–A</option>
-          <option value="featured">Destaques primeiro</option>
-        </select>
       </div>
 
       {/* Categorias */}
