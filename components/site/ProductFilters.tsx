@@ -109,7 +109,7 @@ export default function ProductFilters({ categories, facets, total, filtered }: 
             value={q}
             onChange={(e) => set("q", e.target.value)}
             placeholder="Nome do produto…"
-            className="w-full pl-9 pr-3 py-2 border border-brown/20 bg-white text-sm focus:outline-none focus:border-orange"
+            className="w-full pl-9 pr-3 py-2 border border-brown/20 bg-white text-brown text-sm placeholder:text-brown/40 focus:outline-none focus:border-orange"
           />
         </div>
       </div>
