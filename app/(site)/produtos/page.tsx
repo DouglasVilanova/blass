@@ -107,7 +107,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     : null;
 
   return (
-    <div className="bg-cream min-h-screen text-brown">
+    <div className="produtos-page bg-cream min-h-screen text-brown">
       {/* Page header */}
       <div className="bg-brown text-cream-light py-10">
         <div className="mx-auto max-w-7xl px-6">

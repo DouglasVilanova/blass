@@ -16,6 +16,17 @@ body { background: var(--cream); color: var(--brown); font-family: var(--font-in
 input, select, textarea, option { color: var(--brown); }
 ::placeholder { color: rgba(79, 38, 18, 0.4); }
 
+/* Página de produtos (fundo claro): força texto escuro nos campos, à prova de
+   herança e de -webkit-text-fill-color. Não afeta o login (escuro). */
+.produtos-page input,
+.produtos-page select,
+.produtos-page textarea,
+.produtos-page option {
+  color: #4F2612 !important;
+  -webkit-text-fill-color: #4F2612 !important;
+}
+.produtos-page input::placeholder { color: rgba(79, 38, 18, 0.4) !important; -webkit-text-fill-color: rgba(79, 38, 18, 0.4) !important; }
+
 .pattern-zigzag {
   background-image: repeating-linear-gradient(
     45deg,
