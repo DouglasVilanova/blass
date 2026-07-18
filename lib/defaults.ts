@@ -56,7 +56,6 @@ export const DEFAULT_STORE: Store = {
     layouts: {
       construimos: {
         predioZoom: 1.15,
-        mao: { x: 80, y: 52, w: 54 },
         brilho: { x: 72, y: 92, w: 60 },
       },
     },
@@ -119,8 +118,11 @@ export const DEFAULT_STORE: Store = {
     },
     contact: {
       phone: "(54) 3022-9600",
+      phones: ["(54) 3022-9600"],
       phoneDigits: "5430229600",
+      whatsapps: ["5430229600"],
       email: "sac@blass.ind.br",
+      emails: ["sac@blass.ind.br"],
       address: "Rua Milano, 1804 — Flores da Cunha — RS, 95270-000",
       instagram: "https://instagram.com/blassiluminacao",
       facebook: "https://facebook.com/blassiluminacao",

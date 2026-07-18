@@ -26,7 +26,7 @@ export default function Tendencias({
   const img = image || d.image;
 
   return (
-    <section className="relative border-t border-[#6E5E53] overflow-hidden bg-night-deep">
+    <section className="relative overflow-hidden bg-night-deep">
       <img src={img} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-0 bg-night-deep/55" />
 

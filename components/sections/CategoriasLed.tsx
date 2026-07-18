@@ -7,7 +7,7 @@ type Card = { label: string; href: string; off: string; on: string };
 export default function CategoriasLed({ cards }: { cards?: Card[] }) {
   const list = cards?.length ? cards : DEFAULT_STORE.settings.categoriasCards.cards;
   return (
-    <section className="bg-night border-t border-[#6E5E53] py-14 md:py-20 overflow-hidden">
+    <section className="bg-night py-14 md:py-20 overflow-hidden">
       <div className="mx-auto max-w-6xl px-6 flex flex-col gap-[50px]">
         {list.map((c, i) => {
           const right = i % 2 === 1; // zigzag: par=esquerda, ímpar=direita

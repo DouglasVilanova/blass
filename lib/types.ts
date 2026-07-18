@@ -1,4 +1,4 @@
-export type Subcategory = { slug: string; name: string };
+export type Subcategory = { slug: string; name: string; image?: string };
 export type Category = {
   slug: string;
   name: string;
@@ -69,7 +69,6 @@ export type LayerPos = { x: number; y: number; w: number };
 export type SiteLayouts = {
   construimos: {
     predioZoom: number; // escala CSS do prédio (1 = sem zoom)
-    mao: LayerPos;
     brilho: LayerPos;
   };
 };
@@ -94,9 +93,15 @@ export type SiteSettings = {
   };
   reach: { title: string; body: string; ctaLabel: string; ctaHref: string };
   contact: {
+    /** @deprecated legado — use phones[] */
     phone: string;
+    phones?: string[];
+    /** Primeiro número = principal (usado nos botões de WhatsApp do site) */
     phoneDigits: string;
+    whatsapps?: string[];
+    /** @deprecated legado — use emails[] */
     email: string;
+    emails?: string[];
     address: string;
     instagram: string;
     facebook: string;

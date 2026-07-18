@@ -1,16 +1,24 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { getCategories, getProducts } from "@/lib/db";
 import type { Product } from "@/lib/types";
 import ProductCard from "@/components/site/ProductCard";
 import ProductFilters from "@/components/site/ProductFilters";
+import CatalogPanels from "@/components/site/CatalogPanels";
 import SortSelect from "@/components/site/SortSelect";
 import { getAdminEmail } from "@/lib/session-server";
 import { getSettings } from "@/lib/settings";
-import { parseAttrParams, matchesAttrSelection, buildFacets } from "@/lib/attributes";
+import { parseAttrParams, matchesAttrSelection } from "@/lib/attributes";
 import { LayoutGrid, List } from "lucide-react";
 
 export const revalidate = 0;
 export const metadata = { title: "Produtos — Blass" };
+
+// Fotos padrão dos painéis de categoria (nível 1 da intro)
+const DEFAULT_CAT_IMAGES: Record<string, string> = {
+  iluminacao: "/novo/cat-iluminacao-on.webp",
+  componentes: "/novo/cat-componentes-on.webp",
+};
 
 type PageProps = {
   searchParams: {
@@ -21,6 +29,7 @@ type PageProps = {
     featured?: string;
     sort?: string;
     view?: string;
+    all?: string;
   };
 };
 
@@ -87,24 +96,79 @@ export default async function ProductsPage({ searchParams }: PageProps) {
   const cat = settings.catalogo;
 
   const filtered = filterProducts(allProducts, searchParams);
-
-  // Facetas: calculadas sobre produtos que batem com os demais filtros
-  // (categoria/sub/busca/destaque), ignorando a seleção de características —
-  // assim os valores disponíveis refletem o contexto atual sem se auto-excluir.
-  const facetBase = filterProducts(allProducts, { ...searchParams, attr: undefined });
-  const facets = buildFacets(facetBase);
   const attrSelection = parseAttrParams(arr(searchParams.attr));
 
   const catMap = Object.fromEntries(categories.map((c) => [c.slug, c]));
   const view = searchParams.view ?? "grid";
 
   const catList = arr(searchParams.cat);
-  const isAcessorios = arr(searchParams.sub).includes("acessorios");
+  const subList = arr(searchParams.sub);
+  const isAcessorios = subList.includes("acessorios");
   const activeCatName = isAcessorios
     ? "Acessórios"
     : catList.length === 1
     ? categories.find((c) => c.slug === catList[0])?.name
     : null;
+
+  // ── Intro em painéis fotográficos ─────────────────────────────
+  // Sem nenhum filtro → nível 1 (categorias). Só categoria (sem sub/busca/
+  // destaque/attr e sem ?all=1) → nível 2 (subcategorias da categoria).
+  const visibleCategories = categories.filter((c) => c.slug !== "acessorios");
+  const hasOtherFilters =
+    !!searchParams.q || subList.length > 0 || arr(searchParams.attr).length > 0 || searchParams.featured === "1";
+  const showIntro = !hasOtherFilters && catList.length === 0 && searchParams.all !== "1";
+  const introCat =
+    !hasOtherFilters && catList.length === 1 && searchParams.all !== "1"
+      ? visibleCategories.find((c) => c.slug === catList[0])
+      : undefined;
+  const showSubPanels = !!introCat && introCat.subcategories.length > 0;
+
+  if (showIntro || showSubPanels) {
+    const panels = showIntro
+      ? visibleCategories.map((c) => ({
+          label: c.name,
+          href: `/produtos?cat=${c.slug}`,
+          image: DEFAULT_CAT_IMAGES[c.slug],
+        }))
+      : introCat!.subcategories.map((s) => ({
+          label: s.name,
+          href: `/produtos?cat=${introCat!.slug}&sub=${s.slug}`,
+          image: s.image,
+        }));
+
+    return (
+      <div className="produtos-page bg-cream min-h-screen text-brown">
+        <div className="bg-brown text-cream-light py-10">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="text-xs tracking-widest text-orange mb-1">{cat.tag}</div>
+            <h1 className="font-exo font-bold text-4xl">{showIntro ? cat.title : introCat!.name}</h1>
+            <p className="text-cream-light/60 text-sm mt-2">
+              {showIntro ? cat.subtitle : "Escolha uma linha para ver os produtos."}
+            </p>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-7xl px-6 py-10 space-y-8">
+          {!showIntro && (
+            <Link href="/produtos" className="inline-block text-xs tracking-widest text-orange hover:underline">
+              ← TODAS AS CATEGORIAS
+            </Link>
+          )}
+
+          <CatalogPanels panels={panels} tall={showIntro} />
+
+          <div className="text-center">
+            <Link
+              href={showIntro ? "/produtos?all=1" : `/produtos?cat=${introCat!.slug}&all=1`}
+              className="inline-flex items-center rounded-full border border-orange text-brown hover:bg-orange hover:text-white px-6 py-2.5 text-sm transition-colors"
+            >
+              Ver todos os produtos {showIntro ? "" : `de ${introCat!.name}`}
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="produtos-page bg-cream min-h-screen text-brown">
@@ -129,7 +193,6 @@ export default async function ProductsPage({ searchParams }: PageProps) {
             <Suspense>
               <ProductFilters
                 categories={categories}
-                facets={facets}
                 total={allProducts.length}
                 filtered={filtered.length}
               />

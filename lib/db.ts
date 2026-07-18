@@ -7,6 +7,34 @@ import { createAdminSupabase, createClient } from "./supabase/server";
 import type { BlogCategory, BlogPost, Category, Product, Representante } from "./types";
 
 // ────────────────────────────────────────────────────────────
+// NEWSLETTER
+// ────────────────────────────────────────────────────────────
+
+export type NewsletterSubscriber = { email: string; createdAt: string };
+
+export async function addNewsletterSubscriber(email: string): Promise<void> {
+  const sb = createAdminSupabase();
+  const { error } = await sb
+    .from("newsletter_subscribers")
+    .upsert({ email }, { onConflict: "email", ignoreDuplicates: true });
+  if (error) throw new Error(error.message);
+}
+
+export async function getNewsletterSubscribers(): Promise<NewsletterSubscriber[]> {
+  const sb = createAdminSupabase();
+  const { data } = await sb
+    .from("newsletter_subscribers")
+    .select("*")
+    .order("created_at", { ascending: false });
+  return (data ?? []).map((r: any) => ({ email: r.email, createdAt: r.created_at }));
+}
+
+export async function deleteNewsletterSubscriberDb(email: string): Promise<void> {
+  const sb = createAdminSupabase();
+  await sb.from("newsletter_subscribers").delete().eq("email", email);
+}
+
+// ────────────────────────────────────────────────────────────
 // REPRESENTANTES
 // ────────────────────────────────────────────────────────────
 

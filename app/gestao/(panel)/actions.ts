@@ -13,10 +13,26 @@ import {
   getCategories, getBlogCategories,
   getBlogPosts, countFeaturedProducts,
   upsertRepresentante, deleteRepresentanteDb,
+  deleteNewsletterSubscriberDb,
 } from "@/lib/db";
 
 const MAX_FEATURED = 6;
 import type { BlogCategory, BlogPost, Category, Product, ProductAttribute, Representante } from "@/lib/types";
+
+// ────────────────────────────────────────────────────────────
+// NEWSLETTER
+// ────────────────────────────────────────────────────────────
+
+export async function deleteNewsletterSubscriber(email: string): Promise<{ ok: true } | { error: string }> {
+  try {
+    await requireAdmin();
+    await deleteNewsletterSubscriberDb(email);
+    revalidatePath("/gestao/newsletter");
+    return { ok: true };
+  } catch (e: any) {
+    return { error: e?.message ?? "Erro ao excluir" };
+  }
+}
 
 // ────────────────────────────────────────────────────────────
 // REPRESENTANTES
@@ -383,6 +399,30 @@ export async function createSubcategoryInline(
     return { slug, name: clean };
   } catch (e: any) {
     return { error: e?.message ?? "Erro ao criar subcategoria" };
+  }
+}
+
+export async function setSubcategoryImage(
+  catSlug: string,
+  subSlug: string,
+  image: string
+): Promise<{ ok: true } | { error: string }> {
+  try {
+    await requireAdmin();
+    const categories = await getCategories();
+    const cat = categories.find((c) => c.slug === catSlug);
+    if (!cat) return { error: "Categoria não encontrada." };
+    await upsertCategory({
+      ...cat,
+      subcategories: cat.subcategories.map((s) =>
+        s.slug === subSlug ? { ...s, image: image || undefined } : s
+      ),
+    });
+    revalidatePath("/produtos", "layout");
+    revalidatePath("/gestao/categorias");
+    return { ok: true };
+  } catch (e: any) {
+    return { error: e?.message ?? "Erro ao salvar foto" };
   }
 }
 

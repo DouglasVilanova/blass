@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { Plus, X, Pencil, Trash2, ChevronDown, Lamp, Wrench, Tags, Loader2 } from "lucide-react";
+import { useRef, useState, useTransition } from "react";
+import { Plus, X, Pencil, Trash2, ChevronDown, Lamp, Wrench, Tags, Loader2, Image as ImageIcon } from "lucide-react";
 import { useToast } from "@/components/gestao/Toast";
 import { useConfirm } from "@/components/gestao/ConfirmDialog";
 import { Field, inputCls } from "@/components/gestao/Field";
+import { compressImage } from "@/lib/client-image";
 import {
   createCategory,
   updateCategory,
   deleteCategory,
   addSubcategory,
   removeSubcategory,
+  setSubcategoryImage,
 } from "@/app/gestao/(panel)/actions";
-import type { Category, Product } from "@/lib/types";
+import type { Category, Product, Subcategory } from "@/lib/types";
 
 type Props = {
   categories: Category[];
@@ -222,7 +224,7 @@ function CategoryRow({
         />
       </button>
 
-      {/* Expanded content */}
+      {/* Expanded content — ver SubcategoryRow no fim do arquivo */}
       {isOpen && (
         <div className="px-5 pb-6 pt-2 bg-cream-light/20 space-y-6 animate-in fade-in slide-in-from-top-1 duration-150">
 
@@ -262,21 +264,18 @@ function CategoryRow({
               Subcategorias ({category.subcategories.length})
             </h3>
 
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="space-y-2 mb-4">
               {category.subcategories.length === 0 ? (
                 <span className="text-xs text-brown/40 italic">Nenhuma subcategoria cadastrada.</span>
               ) : (
                 category.subcategories.map((sc) => (
-                  <button
+                  <SubcategoryRow
                     key={sc.slug}
-                    onClick={() => handleRemoveSub(sc.slug, sc.name)}
+                    catSlug={category.slug}
+                    sub={sc}
                     disabled={pending}
-                    className="group flex items-center gap-2 text-xs px-3 py-1.5 bg-white border border-brown/20 hover:border-red-500 hover:text-red-600 transition-colors disabled:opacity-50"
-                    title="Clique para remover"
-                  >
-                    {sc.name}
-                    <X className="w-3 h-3 text-brown/40 group-hover:text-red-600" />
-                  </button>
+                    onRemove={() => handleRemoveSub(sc.slug, sc.name)}
+                  />
                 ))
               )}
             </div>
@@ -307,6 +306,118 @@ function CategoryRow({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Linha de subcategoria com foto (usada nos painéis do catálogo).
+ * Upload otimizado (WebP → bucket); só a URL vai pro banco.
+ */
+function SubcategoryRow({
+  catSlug,
+  sub,
+  disabled,
+  onRemove,
+}: {
+  catSlug: string;
+  sub: Subcategory;
+  disabled: boolean;
+  onRemove: () => void;
+}) {
+  const { push } = useToast();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [img, setImg] = useState(sub.image ?? "");
+
+  async function upload(file: File) {
+    setBusy(true);
+    try {
+      const compressed = await compressImage(file);
+      const fd = new FormData();
+      fd.append("file", compressed);
+      fd.append("folder", "site");
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.url) {
+        push(json.error ?? "Erro no upload", "error");
+        return;
+      }
+      const r = await setSubcategoryImage(catSlug, sub.slug, json.url);
+      if ("error" in r) { push(r.error, "error"); return; }
+      setImg(json.url);
+      push("Foto da subcategoria salva!");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function clearImg() {
+    setBusy(true);
+    const r = await setSubcategoryImage(catSlug, sub.slug, "");
+    setBusy(false);
+    if ("error" in r) { push(r.error, "error"); return; }
+    setImg("");
+    push("Foto removida");
+  }
+
+  return (
+    <div className="flex items-center gap-3 bg-white border border-brown/15 rounded-lg px-3 py-2">
+      {/* Thumbnail */}
+      <div className="w-12 h-12 rounded overflow-hidden bg-cream-dark flex items-center justify-center flex-shrink-0">
+        {img ? (
+          <img src={img} alt={sub.name} className="w-full h-full object-cover" />
+        ) : (
+          <ImageIcon className="w-5 h-5 text-brown/25" />
+        )}
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-brown truncate">{sub.name}</div>
+        <div className="text-[11px] text-brown/40">{img ? "Com foto (painel do catálogo)" : "Sem foto — painel fica com fundo padrão"}</div>
+      </div>
+
+      {/* Ações */}
+      <button
+        type="button"
+        onClick={() => fileRef.current?.click()}
+        disabled={busy || disabled}
+        className="text-[11px] text-orange hover:underline disabled:opacity-40 whitespace-nowrap"
+      >
+        {busy ? "Enviando…" : img ? "Trocar foto" : "Adicionar foto"}
+      </button>
+      {img && (
+        <button
+          type="button"
+          onClick={clearImg}
+          disabled={busy || disabled}
+          className="text-[11px] text-brown/50 hover:text-red-600 disabled:opacity-40 whitespace-nowrap"
+        >
+          Remover foto
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={onRemove}
+        disabled={busy || disabled}
+        className="text-brown/40 hover:text-red-600 p-1 disabled:opacity-40"
+        title="Remover subcategoria"
+        aria-label={`Remover subcategoria ${sub.name}`}
+      >
+        <X className="w-4 h-4" />
+      </button>
+
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) upload(f);
+          e.target.value = "";
+        }}
+      />
     </div>
   );
 }

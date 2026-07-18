@@ -14,7 +14,7 @@ export default async function ConstruimosBlocoPage() {
     <>
       <PageHeader
         title="Bloco — A Blass que construímos"
-        subtitle="Edite o texto e posicione a mão e o brilho sobre o prédio."
+        subtitle="Edite o texto e posicione o brilho sobre o prédio."
       />
       <ConstruimosEditor initialLayouts={layouts} initialTexto={texto} />
     </>

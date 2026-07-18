@@ -41,7 +41,7 @@ export default function FeaturedCarousel({
   return (
     <section
       id="novidades"
-      className="relative bg-[#4F2612] border-t border-[#6E5E53] py-14 md:py-20 overflow-hidden"
+      className="relative bg-[#4F2612] py-14 md:py-20 overflow-hidden"
       onMouseEnter={(e) => (e.currentTarget.dataset.paused = "true")}
       onMouseLeave={(e) => (e.currentTarget.dataset.paused = "false")}
     >
@@ -53,13 +53,13 @@ export default function FeaturedCarousel({
       />
 
       <div className="relative mx-auto max-w-6xl px-6">
-        <h2 className="font-exo font-bold uppercase tracking-wide text-cream-light text-3xl md:text-5xl text-center mb-10">
-          Novidades
-        </h2>
-
         <div className="relative">
           {/* Card */}
           <div className="rounded-[26px] border border-orange/80 bg-brown/20 p-6 md:p-10">
+            {/* Título dentro do bloco */}
+            <h2 className="font-exo font-bold uppercase tracking-wide text-cream-light text-3xl md:text-5xl text-center mb-8 md:mb-10">
+              Novidades
+            </h2>
             <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
               {/* Texto */}
               <div>

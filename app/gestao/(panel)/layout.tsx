@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Boxes, FileText, Home, Tags, Eye, Code2, LogOut, Image as ImageIcon, Phone, Type, Users } from "lucide-react";
+import { Boxes, FileText, Home, Tags, Eye, Code2, LogOut, Image as ImageIcon, Phone, Type, Users, Mail } from "lucide-react";
 import { ToastProvider } from "@/components/gestao/Toast";
 import { getSettings } from "@/lib/settings";
 import { cookies } from "next/headers";
@@ -31,6 +31,7 @@ const GERAL: Item[] = [
   { href: "/gestao/produtos", label: "Produtos", icon: Boxes },
   { href: "/gestao/categorias", label: "Categorias", icon: Tags },
   { href: "/gestao/representantes", label: "Representantes", icon: Users },
+  { href: "/gestao/newsletter", label: "Newsletter", icon: Mail },
   { href: "/gestao/blog", label: "Blog", icon: FileText },
   { href: "/gestao/visibilidade", label: "Visibilidade", icon: Eye },
   { href: "/gestao/seo", label: "SEO", icon: Code2 },

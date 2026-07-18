@@ -11,7 +11,7 @@ export default function Inovacao({ settings }: { settings: SiteSettings }) {
   const paragraphs = inv.paragraphs?.length ? inv.paragraphs : DEFAULT_STORE.settings.inovacao.paragraphs;
 
   return (
-    <section className="bg-[#4F2612] border-t border-[#6E5E53] py-14 md:py-20 overflow-hidden">
+    <section className="bg-[#4F2612] py-14 md:py-20 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         {/* Texto — entra da esquerda (distância longa) */}
         <Reveal variant="left-far">

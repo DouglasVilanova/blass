@@ -28,7 +28,7 @@ export default function ConstruimosEditor({
   const [paras, setParas] = useState(initialTexto.paragraphs.join("\n\n"));
   const [saving, setSaving] = useState(false);
 
-  function setLayer(layer: "mao" | "brilho", key: "x" | "y" | "w", value: number) {
+  function setLayer(layer: "brilho", key: "x" | "y" | "w", value: number) {
     setC((prev) => ({ ...prev, [layer]: { ...prev[layer], [key]: value } }));
   }
 
@@ -67,21 +67,11 @@ export default function ConstruimosEditor({
       </div>
 
       {/* Controles */}
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 gap-6">
         {/* Prédio */}
         <Group title="Prédio (BLASS)">
           <Slider label="Zoom" value={c.predioZoom} min={1} max={1.8} step={0.01}
             onChange={(v) => setC((p) => ({ ...p, predioZoom: v }))} fmt={(v) => v.toFixed(2) + "×"} />
-        </Group>
-
-        {/* Mão */}
-        <Group title="Mão">
-          <Slider label="Horizontal" value={c.mao.x} min={-20} max={120} step={1}
-            onChange={(v) => setLayer("mao", "x", v)} fmt={(v) => v + "%"} />
-          <Slider label="Vertical" value={c.mao.y} min={-20} max={120} step={1}
-            onChange={(v) => setLayer("mao", "y", v)} fmt={(v) => v + "%"} />
-          <Slider label="Tamanho" value={c.mao.w} min={10} max={110} step={1}
-            onChange={(v) => setLayer("mao", "w", v)} fmt={(v) => v + "%"} />
         </Group>
 
         {/* Brilho */}

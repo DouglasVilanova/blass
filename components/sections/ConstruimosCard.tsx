@@ -4,13 +4,13 @@ import Reveal from "@/components/Reveal";
 type Layout = SiteLayouts["construimos"];
 
 /**
- * Card do bloco "A Blass que construímos" — 3 camadas posicionáveis:
- * prédio (com zoom), mão e brilho. Usado tanto no site quanto no editor
+ * Card do bloco "A Blass que construímos" — camadas posicionáveis:
+ * prédio (com zoom) e brilho. Usado tanto no site quanto no editor
  * do painel, garantindo que o preview seja idêntico ao resultado final.
  * `animate` liga as animações de entrada (desligado no editor).
  */
 export default function ConstruimosCard({ layout, animate = true }: { layout: Layout; animate?: boolean }) {
-  const { predioZoom, mao, brilho } = layout;
+  const { predioZoom, brilho } = layout;
 
   const layerStyle = (l: { x: number; y: number; w: number }): React.CSSProperties => ({
     position: "absolute",
@@ -40,24 +40,15 @@ export default function ConstruimosCard({ layout, animate = true }: { layout: La
     </div>
   );
 
-  // Mão + brilho (só md+ pra não bagunçar no mobile)
+  // Brilho (só md+ pra não bagunçar no mobile)
   const layers = (
-    <>
-      <img
-        src="/novo/brilho.webp"
-        alt=""
-        aria-hidden
-        className="hidden md:block pointer-events-none mix-blend-screen z-10"
-        style={layerStyle(brilho)}
-      />
-      <img
-        src="/novo/mao.webp"
-        alt=""
-        aria-hidden
-        className="hidden md:block pointer-events-none z-20 drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
-        style={layerStyle(mao)}
-      />
-    </>
+    <img
+      src="/novo/brilho.webp"
+      alt=""
+      aria-hidden
+      className="hidden md:block pointer-events-none mix-blend-screen z-10"
+      style={layerStyle(brilho)}
+    />
   );
 
   return (
@@ -65,7 +56,7 @@ export default function ConstruimosCard({ layout, animate = true }: { layout: La
       {/* Prédio entra deslizando da esquerda (distância longa) */}
       {animate ? <Reveal variant="left-far">{card}</Reveal> : card}
 
-      {/* Mão + brilho sobem de baixo (distância longa) */}
+      {/* Brilho sobe de baixo (distância longa) */}
       {animate ? (
         <Reveal variant="up-far" delay={250} className="absolute inset-0 pointer-events-none">
           {layers}

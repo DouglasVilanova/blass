@@ -27,7 +27,8 @@ export default function Header({ settings }: { settings: SiteSettings }) {
   const [open, setOpen] = useState(false);
   // Home: header sobreposto ao hero (transparente). Demais páginas: ocupa espaço, fundo sólido.
   const isHome = usePathname() === "/";
-  const wa = waLink(settings.contact.phoneDigits) || settings.contact.instagram;
+  const wa = waLink(settings.contact.phoneDigits);
+  const instagram = settings.contact.instagram?.trim() || "";
 
   return (
     <header
@@ -59,14 +60,18 @@ export default function Header({ settings }: { settings: SiteSettings }) {
             ))}
           </div>
 
-          {/* Direita: redes + hamburguer */}
+          {/* Direita: redes (só as preenchidas no painel) + hamburguer */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            <a href={wa} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="text-cream-light/85 hover:text-orange transition-colors">
-              <WhatsappIcon className="w-[18px] h-[18px]" />
-            </a>
-            <a href={settings.contact.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="text-cream-light/85 hover:text-orange transition-colors">
-              <Instagram className="w-[18px] h-[18px]" />
-            </a>
+            {wa && (
+              <a href={wa} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="text-cream-light/85 hover:text-orange transition-colors">
+                <WhatsappIcon className="w-[18px] h-[18px]" />
+              </a>
+            )}
+            {instagram && (
+              <a href={instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="text-cream-light/85 hover:text-orange transition-colors">
+                <Instagram className="w-[18px] h-[18px]" />
+              </a>
+            )}
             <button
               type="button"
               onClick={() => setOpen(true)}
@@ -100,14 +105,20 @@ export default function Header({ settings }: { settings: SiteSettings }) {
               </Link>
             ))}
           </nav>
-          <div className="flex items-center justify-center gap-6 pb-10">
-            <a href={wa} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="text-cream-light hover:text-orange">
-              <WhatsappIcon className="w-6 h-6" />
-            </a>
-            <a href={settings.contact.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="text-cream-light hover:text-orange">
-              <Instagram className="w-6 h-6" />
-            </a>
-          </div>
+          {(wa || instagram) && (
+            <div className="flex items-center justify-center gap-6 pb-10">
+              {wa && (
+                <a href={wa} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="text-cream-light hover:text-orange">
+                  <WhatsappIcon className="w-6 h-6" />
+                </a>
+              )}
+              {instagram && (
+                <a href={instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="text-cream-light hover:text-orange">
+                  <Instagram className="w-6 h-6" />
+                </a>
+              )}
+            </div>
+          )}
         </div>
       )}
     </header>

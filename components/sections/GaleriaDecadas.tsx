@@ -6,7 +6,7 @@ export default function GaleriaDecadas({ images }: { images?: string[] }) {
   const loop = [...list, ...list];
 
   return (
-    <section className="bg-cream border-t border-[#6E5E53] py-12 md:py-16 overflow-hidden">
+    <section className="bg-cream py-12 md:py-16 overflow-hidden">
       <div className="px-6 text-center mb-8">
         <h2 className="font-exo font-bold text-2xl md:text-4xl leading-tight">
           <span className="text-brown">Há mais de duas décadas trazendo</span>
@@ -25,7 +25,7 @@ export default function GaleriaDecadas({ images }: { images?: string[] }) {
               alt=""
               aria-hidden
               loading="lazy"
-              className="h-[280px] md:h-[360px] w-[260px] md:w-[330px] object-cover flex-shrink-0 rounded-2xl"
+              className="h-[clamp(240px,48vh,600px)] w-[clamp(220px,34vw,440px)] object-cover flex-shrink-0 rounded-2xl"
             />
           ))}
         </div>
