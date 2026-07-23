@@ -80,6 +80,9 @@ export default async function ProductDetail({ params }: Props) {
                 {cat.name.toUpperCase()}{sub ? ` • ${sub.name.toUpperCase()}` : ""}
               </div>
               <h1 className="font-exo font-bold text-4xl text-brown mt-2">{product.name}</h1>
+              {product.code && (
+                <div className="text-sm text-brown/50 mt-1">Cód.: {product.code}</div>
+              )}
               {product.shortDescription && (
                 <p className="text-brown/80 mt-3 text-lg leading-relaxed">{product.shortDescription}</p>
               )}

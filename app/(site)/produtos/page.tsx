@@ -47,6 +47,7 @@ function filterProducts(products: Product[], sp: PageProps["searchParams"]): Pro
     out = out.filter(
       (p) =>
         p.name.toLowerCase().includes(q) ||
+        p.code?.toLowerCase().includes(q) ||
         p.shortDescription?.toLowerCase().includes(q) ||
         p.description?.toLowerCase().includes(q)
     );

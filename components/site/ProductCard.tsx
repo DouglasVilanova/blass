@@ -54,6 +54,7 @@ export default function ProductCard({
         <h3 className="font-semibold text-brown leading-tight group-hover:text-orange transition-colors">
           {product.name}
         </h3>
+        {product.code && <div className="text-[11px] text-brown/45 mt-0.5">Cód.: {product.code}</div>}
         {product.shortDescription && (
           <p className="text-xs text-brown/60 line-clamp-2 mt-0.5">
             {product.shortDescription}

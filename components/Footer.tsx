@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Facebook, Instagram, Linkedin, MapPin, Phone, Mail } from "lucide-react";
 import type { SiteSettings } from "@/lib/types";
-import NewsletterForm from "@/components/site/NewsletterForm";
 
 const MENU = [
   { label: "HOME", href: "/" },
@@ -27,8 +26,8 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
   const addressLines = c.address.split(/<\/?br\s*\/?>|\n/i).map((l) => l.trim()).filter(Boolean);
 
   return (
-    <footer className="bg-[#3C1C0E] text-cream-light/80 text-sm">
-      <div className="mx-auto max-w-7xl px-6 py-12 grid gap-10 md:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_1.3fr_1.3fr] items-start">
+    <footer id="contato" className="bg-[#3C1C0E] text-cream-light/80 text-sm">
+      <div className="mx-auto max-w-7xl px-6 py-12 grid gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.6fr] items-start">
         {/* Logo + redes */}
         <div className="space-y-5">
           <img src="/novo/logo-rodape.webp" alt="Blass — Iluminação e Componentes" className="h-16 w-auto" />
@@ -88,17 +87,6 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
               </a>
             ))}
           </div>
-        </div>
-
-        {/* Newsletter */}
-        <div className="space-y-3">
-          <div className="text-xs tracking-widest font-semibold text-orange uppercase">
-            Receba nossas novidades
-          </div>
-          <p className="text-xs text-cream-light/50">
-            Deixe seu e-mail para receber lançamentos e novidades da Blass.
-          </p>
-          <NewsletterForm />
         </div>
       </div>
 

@@ -130,6 +130,10 @@ export default function ProductForm({ action, categories: initialCategories, ini
           <input name="name" className={inputCls} defaultValue={initial?.name} required />
         </Field>
 
+        <Field label="Código do produto" hint="SKU/referência. Aparece abaixo do nome no site. Ex: 13404TLC">
+          <input name="code" className={inputCls} defaultValue={initial?.code} />
+        </Field>
+
         <Field label="Slug (URL)" hint="Vazio → gerado do nome automaticamente.">
           <input name="slug" className={inputCls} defaultValue={initial?.slug} />
         </Field>

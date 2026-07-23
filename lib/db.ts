@@ -10,13 +10,13 @@ import type { BlogCategory, BlogPost, Category, Product, Representante } from ".
 // NEWSLETTER
 // ────────────────────────────────────────────────────────────
 
-export type NewsletterSubscriber = { email: string; createdAt: string };
+export type NewsletterSubscriber = { email: string; name?: string; createdAt: string };
 
-export async function addNewsletterSubscriber(email: string): Promise<void> {
+export async function addNewsletterSubscriber(email: string, name?: string): Promise<void> {
   const sb = createAdminSupabase();
   const { error } = await sb
     .from("newsletter_subscribers")
-    .upsert({ email }, { onConflict: "email", ignoreDuplicates: true });
+    .upsert({ email, name: name ?? null }, { onConflict: "email", ignoreDuplicates: true });
   if (error) throw new Error(error.message);
 }
 
@@ -26,7 +26,7 @@ export async function getNewsletterSubscribers(): Promise<NewsletterSubscriber[]
     .from("newsletter_subscribers")
     .select("*")
     .order("created_at", { ascending: false });
-  return (data ?? []).map((r: any) => ({ email: r.email, createdAt: r.created_at }));
+  return (data ?? []).map((r: any) => ({ email: r.email, name: r.name ?? undefined, createdAt: r.created_at }));
 }
 
 export async function deleteNewsletterSubscriberDb(email: string): Promise<void> {
@@ -40,11 +40,16 @@ export async function deleteNewsletterSubscriberDb(email: string): Promise<void>
 
 export async function getRepresentantes(publishedOnly = false): Promise<Representante[]> {
   const sb = publishedOnly ? createClient() : createAdminSupabase();
-  let q = sb.from("representantes").select("*").order("cidade").order("nome");
+  let q = sb.from("representantes").select("*");
   if (publishedOnly) q = q.eq("published", true);
   const { data } = await q;
   if (!data) return [];
-  return data.map(rowToRepresentante);
+  // Ordem alfabética por empresa (destaque do card), fallback nome
+  return data
+    .map(rowToRepresentante)
+    .sort((a, b) =>
+      (a.empresa || a.nome).localeCompare(b.empresa || b.nome, "pt", { sensitivity: "base" })
+    );
 }
 
 export async function upsertRepresentante(r: Representante): Promise<void> {
@@ -105,7 +110,13 @@ export async function getCategories(): Promise<Category[]> {
   const sb = createClient();
   const { data } = await sb.from("categories").select("*").order("sort_order");
   if (!data) return [];
-  return data.map(rowToCategory);
+  return data.map(rowToCategory).map((c) => ({
+    ...c,
+    // Subcategorias em ordem alfabética
+    subcategories: [...c.subcategories].sort((a, b) =>
+      a.name.localeCompare(b.name, "pt", { sensitivity: "base" })
+    ),
+  }));
 }
 
 export async function upsertCategory(c: Category): Promise<void> {
@@ -192,6 +203,7 @@ export async function upsertProduct(p: Product): Promise<void> {
     id: p.id,
     slug: p.slug,
     name: p.name,
+    code: p.code ?? null,
     category: p.category,
     subcategory: p.subcategory ?? null,
     short_description: p.shortDescription ?? null,
@@ -216,6 +228,7 @@ function rowToProduct(r: any): Product {
     id: r.id,
     slug: r.slug,
     name: r.name,
+    code: r.code ?? undefined,
     category: r.category ?? "",
     subcategory: r.subcategory ?? undefined,
     shortDescription: r.short_description ?? undefined,

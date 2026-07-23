@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: "%s — Blass",
   },
   description:
-    "Soluções em iluminação e componentes para móveis e ambientes. 26 anos de mercado, mais de 2.000 revendas em todo o Brasil. Flores da Cunha — RS.",
+    "Há mais de duas décadas desenvolvendo soluções em iluminação e componentes para móveis, unindo design, tecnologia e qualidade.",
   keywords: [
     "iluminação para móveis",
     "fita de LED",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Blass — Iluminação & Componentes",
     description:
-      "Soluções em iluminação e componentes para móveis. 26 anos de mercado, 2.000+ revendas no Brasil.",
+      "Há mais de duas décadas desenvolvendo soluções em iluminação e componentes para móveis, unindo design, tecnologia e qualidade.",
     url: "https://blass.ind.br",
     siteName: "Blass",
     type: "website",
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Blass — Iluminação & Componentes",
-    description: "26 anos de mercado. 2.000+ revendas. Iluminação e componentes para móveis.",
+    description: "Há mais de duas décadas desenvolvendo soluções em iluminação e componentes para móveis, unindo design, tecnologia e qualidade.",
   },
   robots: {
     index: true,

@@ -11,6 +11,7 @@ export async function subscribeNewsletter(
   formData: FormData
 ): Promise<{ ok?: boolean; error?: string }> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const name = String(formData.get("name") ?? "").trim();
 
   if (!email || !EMAIL_RE.test(email)) {
     return { error: "Digite um e-mail válido." };
@@ -23,7 +24,7 @@ export async function subscribeNewsletter(
   if (!ok) return { error: "Muitas tentativas. Tente novamente mais tarde." };
 
   try {
-    await addNewsletterSubscriber(email);
+    await addNewsletterSubscriber(email, name || undefined);
     return { ok: true };
   } catch {
     return { error: "Não foi possível cadastrar agora. Tente novamente." };

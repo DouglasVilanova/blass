@@ -14,6 +14,7 @@ export type Product = {
   id: string;
   slug: string;
   name: string;
+  code?: string;           // código/SKU do produto
   category: string;        // category slug
   subcategory?: string;    // subcategory slug
   shortDescription?: string;

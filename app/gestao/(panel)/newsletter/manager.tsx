@@ -19,7 +19,7 @@ export default function NewsletterManager({ initial }: { initial: NewsletterSubs
   }, [list, q]);
 
   function exportCsv() {
-    const rows = ["email;data_cadastro", ...list.map((s) => `${s.email};${new Date(s.createdAt).toLocaleString("pt-BR")}`)];
+    const rows = ["nome;email;data_cadastro", ...list.map((s) => `${s.name ?? ""};${s.email};${new Date(s.createdAt).toLocaleString("pt-BR")}`)];
     const blob = new Blob(["﻿" + rows.join("\n")], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -75,7 +75,9 @@ export default function NewsletterManager({ initial }: { initial: NewsletterSubs
           {filtered.map((s) => (
             <li key={s.email} className="flex items-center gap-3 px-5 py-2.5">
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-brown truncate">{s.email}</div>
+                <div className="text-sm text-brown truncate">
+                  {s.name ? <span className="font-medium">{s.name} · </span> : null}{s.email}
+                </div>
                 <div className="text-[11px] text-brown/40">{new Date(s.createdAt).toLocaleString("pt-BR")}</div>
               </div>
               <button
