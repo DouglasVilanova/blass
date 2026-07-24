@@ -4,6 +4,7 @@ export type Category = {
   name: string;
   description?: string;
   icon?: string;
+  image?: string;          // foto do painel de nível 1 em /produtos
   subcategories: Subcategory[];
 };
 
@@ -77,6 +78,12 @@ export type SiteLayouts = {
 export type SiteSeo = {
   head: string;
   bodyStart: string;
+  /** Códigos de verificação de propriedade — renderizados server-side no <head> (o robô lê o HTML bruto). */
+  verification?: {
+    google?: string;
+    bing?: string;
+    facebook?: string;
+  };
 };
 
 export type SiteSettings = {

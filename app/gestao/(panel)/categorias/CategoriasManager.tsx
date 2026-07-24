@@ -13,6 +13,7 @@ import {
   addSubcategory,
   removeSubcategory,
   setSubcategoryImage,
+  setCategoryImage,
 } from "@/app/gestao/(panel)/actions";
 import type { Category, Product, Subcategory } from "@/lib/types";
 
@@ -258,6 +259,9 @@ function CategoryRow({
             </div>
           </form>
 
+          {/* Foto do painel de nível 1 (página de produtos) */}
+          <CategoryImageEditor catSlug={category.slug} catName={category.name} initial={category.image} />
+
           {/* Subcategorias */}
           <div className="border-t border-brown/10 pt-5">
             <h3 className="text-xs tracking-widest font-semibold text-brown/60 uppercase mb-3">
@@ -306,6 +310,109 @@ function CategoryRow({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Foto do painel de nível 1 da categoria (aparece em /produtos).
+ * Vazio = usa a imagem padrão do site. Upload otimizado (WebP → bucket); só a URL vai pro banco.
+ */
+function CategoryImageEditor({
+  catSlug,
+  catName,
+  initial,
+}: {
+  catSlug: string;
+  catName: string;
+  initial?: string;
+}) {
+  const { push } = useToast();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [img, setImg] = useState(initial ?? "");
+
+  async function upload(file: File) {
+    setBusy(true);
+    try {
+      const compressed = await compressImage(file);
+      const fd = new FormData();
+      fd.append("file", compressed);
+      fd.append("folder", "site");
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.url) {
+        push(json.error ?? "Erro no upload", "error");
+        return;
+      }
+      const r = await setCategoryImage(catSlug, json.url);
+      if ("error" in r) { push(r.error, "error"); return; }
+      setImg(json.url);
+      push("Foto da categoria salva!");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function clearImg() {
+    setBusy(true);
+    const r = await setCategoryImage(catSlug, "");
+    setBusy(false);
+    if ("error" in r) { push(r.error, "error"); return; }
+    setImg("");
+    push("Foto removida");
+  }
+
+  return (
+    <div className="border-t border-brown/10 pt-5">
+      <h3 className="text-xs tracking-widest font-semibold text-brown/60 uppercase mb-3">
+        Foto do painel (página de produtos)
+      </h3>
+      <div className="flex items-center gap-4 bg-white border border-brown/15 rounded-lg p-3">
+        {/* Preview em proporção parecida com o painel */}
+        <div className="w-28 h-16 rounded overflow-hidden bg-cream-dark flex items-center justify-center flex-shrink-0">
+          {img ? (
+            <img src={img} alt={catName} className="w-full h-full object-cover" />
+          ) : (
+            <ImageIcon className="w-6 h-6 text-brown/25" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-medium text-brown truncate">{catName}</div>
+          <div className="text-[11px] text-brown/40">
+            {img ? "Foto personalizada do painel" : "Sem foto — usa a imagem padrão do site"}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={busy}
+          className="text-xs text-orange hover:underline disabled:opacity-40 whitespace-nowrap"
+        >
+          {busy ? "Enviando…" : img ? "Trocar foto" : "Adicionar foto"}
+        </button>
+        {img && (
+          <button
+            type="button"
+            onClick={clearImg}
+            disabled={busy}
+            className="text-xs text-brown/50 hover:text-red-600 disabled:opacity-40 whitespace-nowrap"
+          >
+            Remover
+          </button>
+        )}
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) upload(f);
+            e.target.value = "";
+          }}
+        />
+      </div>
     </div>
   );
 }

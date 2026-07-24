@@ -126,6 +126,7 @@ export async function upsertCategory(c: Category): Promise<void> {
     name: c.name,
     description: c.description ?? null,
     icon: c.icon ?? "lamp",
+    image: c.image ?? null,
     subcategories: c.subcategories,
   });
 }
@@ -141,6 +142,7 @@ function rowToCategory(r: any): Category {
     name: r.name,
     description: r.description ?? undefined,
     icon: r.icon ?? "lamp",
+    image: r.image ?? undefined,
     subcategories: Array.isArray(r.subcategories) ? r.subcategories : [],
   };
 }

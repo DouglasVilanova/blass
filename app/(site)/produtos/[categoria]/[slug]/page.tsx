@@ -8,18 +8,25 @@ import ProductGallery from "@/components/site/ProductGallery";
 import AdminProductBar from "@/components/site/AdminProductBar";
 import { productAttrs } from "@/lib/attributes";
 import { waLink } from "@/lib/wa";
+import JsonLd from "@/components/JsonLd";
+import { SITE_URL, stripHtml, clampText, absUrl } from "@/lib/seo";
 
 type Props = { params: { categoria: string; slug: string } };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProductBySlug(params.slug, params.categoria);
   if (!product) return {};
+  const description = clampText(
+    product.shortDescription ?? stripHtml(product.description) ?? product.name
+  );
   return {
     title: product.name,
-    description: product.shortDescription ?? product.description?.slice(0, 160),
+    description,
+    alternates: { canonical: `/produtos/${params.categoria}/${params.slug}` },
     openGraph: {
       title: product.name,
-      description: product.shortDescription,
+      description,
+      type: "website",
       images: product.image ? [product.image] : [],
     },
   };
@@ -46,8 +53,33 @@ export default async function ProductDetail({ params }: Props) {
   ];
   const attrs = productAttrs(product);
 
+  // Structured data — Product (rich results) + trilha de navegação
+  const productUrl = `${SITE_URL}/produtos/${cat.slug}/${product.slug}`;
+  const productLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    ...(allImages.length ? { image: allImages.map((i) => absUrl(i)).filter(Boolean) } : {}),
+    description: clampText(product.shortDescription ?? stripHtml(product.description) ?? product.name),
+    ...(product.code ? { sku: product.code, mpn: product.code } : {}),
+    category: cat.name,
+    brand: { "@type": "Brand", name: "Blass" },
+    url: productUrl,
+  };
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Produtos", item: `${SITE_URL}/produtos` },
+      { "@type": "ListItem", position: 2, name: cat.name, item: `${SITE_URL}/produtos?cat=${cat.slug}` },
+      ...(sub ? [{ "@type": "ListItem", position: 3, name: sub.name }] : []),
+      { "@type": "ListItem", position: sub ? 4 : 3, name: product.name, item: productUrl },
+    ],
+  };
+
   return (
     <div className="bg-cream min-h-screen">
+      <JsonLd data={[productLd, breadcrumbLd]} />
       {/* Admin bar — only when logged in */}
       {isAdmin && (
         <AdminProductBar

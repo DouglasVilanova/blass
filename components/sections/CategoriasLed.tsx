@@ -27,11 +27,8 @@ export default function CategoriasLed({ cards }: { cards?: Card[] }) {
                 aria-label={`Ver produtos de ${c.label}`}
                 className="group relative block w-full aspect-[2.9/1]"
               >
-                {/* Borda laranja (o formato vem do clip-path) */}
-                <div className="absolute inset-0 bg-orange" style={{ clipPath: CHAMFER }} />
-
-                {/* Conteúdo recortado no mesmo formato, 3px menor = espessura da borda */}
-                <div className="absolute inset-[3px] overflow-hidden bg-night-deep" style={{ clipPath: CHAMFER }}>
+                {/* Só a foto no formato chanfrado — sem borda/contorno colorido */}
+                <div className="absolute inset-0 overflow-hidden bg-night-deep" style={{ clipPath: CHAMFER }}>
                   {/* Imagem apagada (padrão) */}
                   <img
                     src={c.off}

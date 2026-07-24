@@ -12,9 +12,15 @@ import { parseAttrParams, matchesAttrSelection } from "@/lib/attributes";
 import { LayoutGrid, List } from "lucide-react";
 
 export const revalidate = 0;
-export const metadata = { title: "Produtos — Blass" };
+export const metadata = {
+  title: "Produtos",
+  description:
+    "Catálogo Blass: iluminação para móveis, fitas e perfis de LED, puxadores e componentes — design, tecnologia e qualidade.",
+  alternates: { canonical: "/produtos" },
+};
 
-// Fotos padrão dos painéis de categoria (nível 1 da intro)
+// Fotos padrão dos painéis de categoria (nível 1) — usadas quando a categoria
+// não tem imagem própria definida no painel (/gestao/categorias).
 const DEFAULT_CAT_IMAGES: Record<string, string> = {
   iluminacao: "/novo/cat-iluminacao-on.webp",
   componentes: "/novo/cat-componentes-on.webp",
@@ -129,7 +135,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
       ? visibleCategories.map((c) => ({
           label: c.name,
           href: `/produtos?cat=${c.slug}`,
-          image: DEFAULT_CAT_IMAGES[c.slug],
+          image: c.image ?? DEFAULT_CAT_IMAGES[c.slug],
         }))
       : introCat!.subcategories.map((s) => ({
           label: s.name,

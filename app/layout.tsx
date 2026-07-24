@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Marcellus } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -29,7 +29,7 @@ const punoer = localFont({
   display: "swap",
 });
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: {
     default: "Blass — Iluminação & Componentes",
     template: "%s — Blass",
@@ -68,6 +68,42 @@ export const metadata: Metadata = {
     follow: true,
   },
 };
+
+export const viewport: Viewport = {
+  themeColor: "#1F1108",
+};
+
+/** Aceita o token puro OU a tag <meta> inteira colada do Search Console/Bing/Facebook. */
+function verificationContent(raw?: string): string | undefined {
+  const t = raw?.trim();
+  if (!t) return undefined;
+  const m = t.match(/content=["']([^"']+)["']/i);
+  return (m ? m[1] : t).trim() || undefined;
+}
+
+// Metadados dinâmicos: injeta os códigos de verificação SERVER-SIDE no <head>,
+// para que o robô do Google/Bing os leia no HTML bruto (campo do painel = client-side, não serve).
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await getSettings();
+  const google = verificationContent(seo.verification?.google);
+  const bing = verificationContent(seo.verification?.bing);
+  const facebook = verificationContent(seo.verification?.facebook);
+
+  const other: Record<string, string> = {};
+  if (bing) other["msvalidate.01"] = bing;
+  if (facebook) other["facebook-domain-verification"] = facebook;
+
+  const hasVerification = google || Object.keys(other).length > 0;
+  if (!hasVerification) return baseMetadata;
+
+  return {
+    ...baseMetadata,
+    verification: {
+      ...(google ? { google } : {}),
+      ...(Object.keys(other).length ? { other } : {}),
+    },
+  };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();

@@ -1,6 +1,28 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { readStore } from "@/lib/store";
+import JsonLd from "@/components/JsonLd";
+import { SITE_URL, stripHtml, clampText, absUrl } from "@/lib/seo";
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const { blogPosts } = await readStore();
+  const post = blogPosts.find((p) => p.slug === params.slug && p.published);
+  if (!post) return {};
+  const description = clampText(post.excerpt ?? stripHtml(post.body) ?? post.title);
+  return {
+    title: post.title,
+    description,
+    alternates: { canonical: `/blog/${post.slug}` },
+    openGraph: {
+      title: post.title,
+      description,
+      type: "article",
+      ...(post.publishedAt ? { publishedTime: post.publishedAt } : {}),
+      ...(post.coverImage ? { images: [post.coverImage] } : {}),
+    },
+  };
+}
 
 export default async function BlogPost({ params }: { params: { slug: string } }) {
   const { blogPosts, blogCategories } = await readStore();
@@ -8,8 +30,24 @@ export default async function BlogPost({ params }: { params: { slug: string } })
   if (!post) notFound();
   const cat = blogCategories.find((c) => c.slug === post.category);
 
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    ...(post.coverImage ? { image: absUrl(post.coverImage) } : {}),
+    ...(post.publishedAt ? { datePublished: post.publishedAt, dateModified: post.publishedAt } : {}),
+    author: { "@type": "Organization", name: "Blass" },
+    publisher: {
+      "@type": "Organization",
+      name: "Blass",
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/icon.png` },
+    },
+    mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
+  };
+
   return (
     <article className="bg-cream py-16">
+      <JsonLd data={articleLd} />
       <div className="mx-auto max-w-3xl px-6">
         <Link href="/blog" className="text-xs text-orange tracking-widest">← VOLTAR PARA O BLOG</Link>
         {cat && <div className="text-xs tracking-widest text-orange mt-6">{cat.name.toUpperCase()}</div>}

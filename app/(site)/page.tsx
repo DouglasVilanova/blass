@@ -8,6 +8,8 @@ import PillsCategorias from "@/components/sections/PillsCategorias";
 import FeaturedCarousel from "@/components/sections/FeaturedCarousel";
 import { getSettings } from "@/lib/settings";
 import { getFeaturedProducts } from "@/lib/db";
+import JsonLd from "@/components/JsonLd";
+import { SITE_URL, stripHtml } from "@/lib/seo";
 
 export const revalidate = 0;
 
@@ -17,9 +19,51 @@ export default async function HomePage() {
     getFeaturedProducts(6),
   ]);
   const v = settings.visibility;
+  const c = settings.contact;
+
+  // Structured data — identidade da empresa para o Google (Knowledge Panel / marca)
+  const sameAs = [c.instagram, c.facebook, c.linkedin].filter((u) => u && u.trim());
+  const phone = c.phones?.[0] ?? c.phone;
+  const email = c.emails?.[0] ?? c.email;
+  const orgLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Blass Iluminação & Componentes",
+    url: SITE_URL,
+    logo: `${SITE_URL}/icon.png`,
+    description:
+      "Há mais de duas décadas desenvolvendo soluções em iluminação e componentes para móveis, unindo design, tecnologia e qualidade.",
+    ...(sameAs.length ? { sameAs } : {}),
+    ...(phone
+      ? {
+          contactPoint: {
+            "@type": "ContactPoint",
+            telephone: phone,
+            contactType: "sales",
+            areaServed: "BR",
+            availableLanguage: "Portuguese",
+            ...(email ? { email } : {}),
+          },
+        }
+      : {}),
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: stripHtml(c.address),
+      addressLocality: "Flores da Cunha",
+      addressRegion: "RS",
+      addressCountry: "BR",
+    },
+  };
+  const siteLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Blass",
+    url: SITE_URL,
+  };
 
   return (
     <>
+      <JsonLd data={[orgLd, siteLd]} />
       <Hero settings={settings} />
       <About settings={settings} />
       <Inovacao settings={settings} />

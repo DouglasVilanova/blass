@@ -13,7 +13,28 @@ export default function SeoEditor({ initial }: { initial: SiteSeo }) {
     >
       {(s, set) => (
         <div className="grid gap-6">
-          <Field label="Head (injetado em <head>)" hint="Cole tags <meta>, <script>, <link>… aqui.">
+          {/* Verificação de propriedade — renderizada no servidor (o robô lê no HTML bruto). */}
+          <div className="rounded-lg border border-brown/15 bg-cream-dark/30 p-4 grid gap-4">
+            <div className="text-xs font-semibold uppercase tracking-widest text-brown/60">
+              Verificação de propriedade (server-side)
+            </div>
+            <p className="text-xs text-brown/50 -mt-2">
+              Cole aqui o código de verificação. Pode colar a tag <code>&lt;meta&gt;</code> inteira ou só o
+              conteúdo — o site injeta no <code>&lt;head&gt;</code> pelo servidor, então o Google/Bing enxerga
+              (diferente do campo “Head” abaixo, que é carregado por JavaScript).
+            </p>
+            <Field label="Google Search Console" hint='Ex.: <meta name="google-site-verification" content="XXXX" /> — ou só o XXXX.'>
+              <input className={inputCls + " font-mono text-xs"} value={s.verification?.google ?? ""} onChange={(e) => set({ verification: { ...s.verification, google: e.target.value } })} />
+            </Field>
+            <Field label="Bing Webmaster (opcional)" hint="msvalidate.01 — cole a tag ou só o código.">
+              <input className={inputCls + " font-mono text-xs"} value={s.verification?.bing ?? ""} onChange={(e) => set({ verification: { ...s.verification, bing: e.target.value } })} />
+            </Field>
+            <Field label="Facebook / Meta Domain (opcional)" hint="facebook-domain-verification — cole a tag ou só o código.">
+              <input className={inputCls + " font-mono text-xs"} value={s.verification?.facebook ?? ""} onChange={(e) => set({ verification: { ...s.verification, facebook: e.target.value } })} />
+            </Field>
+          </div>
+
+          <Field label="Head (injetado em <head> via JavaScript)" hint="Para scripts: Google Analytics, GTM, Meta Pixel. NÃO use para verificação de propriedade — use os campos acima.">
             <textarea className={inputCls + " font-mono text-xs min-h-[200px]"} value={s.head} onChange={(e) => set({ head: e.target.value })} />
           </Field>
           <Field label="Body start (injetado logo após <body>)" hint="Use para noscript do GTM.">

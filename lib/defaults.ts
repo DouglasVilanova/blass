@@ -52,6 +52,7 @@ export const DEFAULT_STORE: Store = {
     seo: {
       head: "",
       bodyStart: "",
+      verification: { google: "", bing: "", facebook: "" },
     },
     layouts: {
       construimos: {

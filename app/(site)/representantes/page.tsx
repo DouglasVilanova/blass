@@ -3,7 +3,12 @@ import RepresentantesGrid from "@/components/site/RepresentantesGrid";
 import type { Representante } from "@/lib/types";
 
 export const revalidate = 0;
-export const metadata = { title: "Representantes — Blass" };
+export const metadata = {
+  title: "Representantes",
+  description:
+    "Encontre o representante Blass da sua região. Iluminação e componentes para móveis em todo o Brasil.",
+  alternates: { canonical: "/representantes" },
+};
 
 export default async function RepresentantesPage() {
   const reps: Representante[] = await getRepresentantes(true).catch(() => []);

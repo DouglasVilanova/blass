@@ -404,6 +404,24 @@ export async function createSubcategoryInline(
   }
 }
 
+export async function setCategoryImage(
+  slug: string,
+  image: string
+): Promise<{ ok: true } | { error: string }> {
+  try {
+    await requireAdmin();
+    const categories = await getCategories();
+    const cat = categories.find((c) => c.slug === slug);
+    if (!cat) return { error: "Categoria não encontrada." };
+    await upsertCategory({ ...cat, image: image || undefined });
+    revalidatePath("/produtos", "layout");
+    revalidatePath("/gestao/categorias");
+    return { ok: true };
+  } catch (e: any) {
+    return { error: e?.message ?? "Erro ao salvar imagem" };
+  }
+}
+
 export async function setSubcategoryImage(
   catSlug: string,
   subSlug: string,

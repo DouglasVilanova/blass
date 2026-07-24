@@ -2,7 +2,12 @@ import Link from "next/link";
 import { readStore } from "@/lib/store";
 import type { BlogCategory, BlogPost } from "@/lib/types";
 
-export const metadata = { title: "Blog — Blass" };
+export const metadata = {
+  title: "Blog",
+  description:
+    "Novidades, tendências e conteúdos sobre iluminação e componentes para móveis — Blass.",
+  alternates: { canonical: "/blog" },
+};
 
 /** Card no estilo da referência: foto com badge da categoria sobreposta,
  *  título em caixa alta centralizado, resumo e "LEIA +". */
