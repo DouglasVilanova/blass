@@ -21,7 +21,7 @@ export default function Newsletter() {
   const [state, action] = useFormState(subscribeNewsletter, null);
 
   return (
-    <section className="bg-night-deep border-t border-[#6E5E53]/40">
+    <section className="bg-gradient-to-b from-brown to-[#3C1C0E] border-t border-orange/20">
       <div className="mx-auto max-w-5xl px-6 py-10 md:py-12">
         <h2 className="font-exo font-semibold text-cream-light text-xl md:text-2xl">
           Inscreva-se na nossa newsletter!
