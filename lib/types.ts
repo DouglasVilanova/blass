@@ -78,6 +78,8 @@ export type SiteLayouts = {
 export type SiteSeo = {
   head: string;
   bodyStart: string;
+  /** Frase de descrição da empresa — meta description exibida no Google/compartilhamento. */
+  description?: string;
   /** Códigos de verificação de propriedade — renderizados server-side no <head> (o robô lê o HTML bruto). */
   verification?: {
     google?: string;

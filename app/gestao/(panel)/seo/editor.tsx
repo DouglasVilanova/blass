@@ -13,6 +13,26 @@ export default function SeoEditor({ initial }: { initial: SiteSeo }) {
     >
       {(s, set) => (
         <div className="grid gap-6">
+          {/* Frase de descrição da empresa — meta description (Google + compartilhamento). */}
+          <Field
+            label="Descrição da empresa (Google / compartilhamento)"
+            hint="Frase que aparece abaixo do título na busca do Google e ao compartilhar o link. Ideal entre 120 e 160 caracteres."
+          >
+            <textarea
+              className={inputCls + " min-h-[90px]"}
+              value={s.description ?? ""}
+              onChange={(e) => set({ description: e.target.value })}
+              maxLength={320}
+              placeholder="Há mais de duas décadas desenvolvendo soluções em iluminação e componentes…"
+            />
+            <div className="mt-1 text-[11px] text-brown/40">
+              {(s.description ?? "").length} caracteres
+              {(s.description ?? "").length > 160 && (
+                <span className="text-orange"> · o Google costuma cortar após ~160</span>
+              )}
+            </div>
+          </Field>
+
           {/* Verificação de propriedade — renderizada no servidor (o robô lê no HTML bruto). */}
           <div className="rounded-lg border border-brown/15 bg-cream-dark/30 p-4 grid gap-4">
             <div className="text-xs font-semibold uppercase tracking-widest text-brown/60">

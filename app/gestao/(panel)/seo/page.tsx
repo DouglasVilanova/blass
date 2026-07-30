@@ -6,7 +6,7 @@ export default async function Page() {
   const s = await getSettings();
   return (
     <>
-      <PageHeader title="SEO / Scripts" subtitle="Verificação de propriedade (Google/Bing) renderizada no servidor + HTML livre para Analytics, GTM e Meta Pixel." />
+      <PageHeader title="SEO / Scripts" subtitle="Descrição da empresa + verificação de propriedade (server-side) + HTML livre para Analytics, GTM e Meta Pixel." />
       <SeoEditor initial={s.seo} />
     </>
   );

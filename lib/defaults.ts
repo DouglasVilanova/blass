@@ -1,4 +1,5 @@
 import type { Store } from "./types";
+import { DEFAULT_DESCRIPTION } from "./seo";
 
 export const DEFAULT_STORE: Store = {
   settings: {
@@ -52,6 +53,7 @@ export const DEFAULT_STORE: Store = {
     seo: {
       head: "",
       bodyStart: "",
+      description: DEFAULT_DESCRIPTION,
       verification: { google: "", bing: "", facebook: "" },
     },
     layouts: {

@@ -9,7 +9,7 @@ import FeaturedCarousel from "@/components/sections/FeaturedCarousel";
 import { getSettings } from "@/lib/settings";
 import { getFeaturedProducts } from "@/lib/db";
 import JsonLd from "@/components/JsonLd";
-import { SITE_URL, stripHtml } from "@/lib/seo";
+import { SITE_URL, stripHtml, DEFAULT_DESCRIPTION } from "@/lib/seo";
 
 export const revalidate = 0;
 
@@ -31,8 +31,7 @@ export default async function HomePage() {
     name: "Blass Iluminação & Componentes",
     url: SITE_URL,
     logo: `${SITE_URL}/icon.png`,
-    description:
-      "Há mais de duas décadas desenvolvendo soluções em iluminação e componentes para móveis, unindo design, tecnologia e qualidade.",
+    description: settings.seo.description?.trim() || DEFAULT_DESCRIPTION,
     ...(sameAs.length ? { sameAs } : {}),
     ...(phone
       ? {

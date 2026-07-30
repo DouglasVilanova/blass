@@ -2,6 +2,10 @@
 
 export const SITE_URL = "https://blass.ind.br";
 
+/** Descrição padrão da empresa (usada quando o painel não define uma). */
+export const DEFAULT_DESCRIPTION =
+  "Há mais de duas décadas desenvolvendo soluções em iluminação e componentes para móveis, unindo design, tecnologia e qualidade.";
+
 /** Remove tags HTML e normaliza espaços (para descrições a partir do corpo rico). */
 export function stripHtml(s?: string): string {
   return (s ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();

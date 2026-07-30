@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import SeoHeadTags from "@/components/SeoHeadTags";
 import { getSettings } from "@/lib/settings";
+import { DEFAULT_DESCRIPTION } from "@/lib/seo";
 import { ConfirmProvider } from "@/components/gestao/ConfirmDialog";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -34,8 +35,7 @@ const baseMetadata: Metadata = {
     default: "Blass — Iluminação & Componentes",
     template: "%s — Blass",
   },
-  description:
-    "Há mais de duas décadas desenvolvendo soluções em iluminação e componentes para móveis, unindo design, tecnologia e qualidade.",
+  description: DEFAULT_DESCRIPTION,
   keywords: [
     "iluminação para móveis",
     "fita de LED",
@@ -51,8 +51,7 @@ const baseMetadata: Metadata = {
   alternates: { canonical: "/" },
   openGraph: {
     title: "Blass — Iluminação & Componentes",
-    description:
-      "Há mais de duas décadas desenvolvendo soluções em iluminação e componentes para móveis, unindo design, tecnologia e qualidade.",
+    description: DEFAULT_DESCRIPTION,
     url: "https://blass.ind.br",
     siteName: "Blass",
     type: "website",
@@ -61,7 +60,7 @@ const baseMetadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Blass — Iluminação & Componentes",
-    description: "Há mais de duas décadas desenvolvendo soluções em iluminação e componentes para móveis, unindo design, tecnologia e qualidade.",
+    description: DEFAULT_DESCRIPTION,
   },
   robots: {
     index: true,
@@ -85,6 +84,10 @@ function verificationContent(raw?: string): string | undefined {
 // para que o robô do Google/Bing os leia no HTML bruto (campo do painel = client-side, não serve).
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getSettings();
+
+  // Frase de descrição editável no painel (fallback = padrão).
+  const description = seo.description?.trim() || DEFAULT_DESCRIPTION;
+
   const google = verificationContent(seo.verification?.google);
   const bing = verificationContent(seo.verification?.bing);
   const facebook = verificationContent(seo.verification?.facebook);
@@ -92,16 +95,21 @@ export async function generateMetadata(): Promise<Metadata> {
   const other: Record<string, string> = {};
   if (bing) other["msvalidate.01"] = bing;
   if (facebook) other["facebook-domain-verification"] = facebook;
-
   const hasVerification = google || Object.keys(other).length > 0;
-  if (!hasVerification) return baseMetadata;
 
   return {
     ...baseMetadata,
-    verification: {
-      ...(google ? { google } : {}),
-      ...(Object.keys(other).length ? { other } : {}),
-    },
+    description,
+    openGraph: { ...baseMetadata.openGraph, description },
+    twitter: { ...baseMetadata.twitter, description },
+    ...(hasVerification
+      ? {
+          verification: {
+            ...(google ? { google } : {}),
+            ...(Object.keys(other).length ? { other } : {}),
+          },
+        }
+      : {}),
   };
 }
 
