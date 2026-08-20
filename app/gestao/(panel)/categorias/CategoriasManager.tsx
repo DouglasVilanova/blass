@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { Plus, X, Pencil, Trash2, ChevronDown, Lamp, Wrench, Tags, Loader2, Image as ImageIcon } from "lucide-react";
+import { Plus, X, Pencil, Trash2, ChevronDown, Lamp, Wrench, Tags, Loader2, Check, Image as ImageIcon } from "lucide-react";
 import { useToast } from "@/components/gestao/Toast";
 import { useConfirm } from "@/components/gestao/ConfirmDialog";
 import { Field, inputCls } from "@/components/gestao/Field";
@@ -13,6 +13,7 @@ import {
   addSubcategory,
   removeSubcategory,
   setSubcategoryImage,
+  renameSubcategory,
   setCategoryImage,
 } from "@/app/gestao/(panel)/actions";
 import type { Category, Product, Subcategory } from "@/lib/types";
@@ -436,6 +437,9 @@ function SubcategoryRow({
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [img, setImg] = useState(sub.image ?? "");
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(sub.name);
+  const [nameVal, setNameVal] = useState(sub.name);
 
   async function upload(file: File) {
     setBusy(true);
@@ -468,6 +472,23 @@ function SubcategoryRow({
     push("Foto removida");
   }
 
+  async function saveName() {
+    const v = nameVal.trim();
+    if (!v || v === name) { setEditing(false); setNameVal(name); return; }
+    setBusy(true);
+    const r = await renameSubcategory(catSlug, sub.slug, v);
+    setBusy(false);
+    if ("error" in r) { push(r.error, "error"); return; }
+    setName(v);
+    setEditing(false);
+    push("Subcategoria renomeada!");
+  }
+
+  function cancelEdit() {
+    setNameVal(name);
+    setEditing(false);
+  }
+
   return (
     <div className="flex items-center gap-3 bg-white border border-brown/15 rounded-lg px-3 py-2">
       {/* Thumbnail */}
@@ -480,7 +501,41 @@ function SubcategoryRow({
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-brown truncate">{sub.name}</div>
+        {editing ? (
+          <div className="flex items-center gap-1.5">
+            <input
+              value={nameVal}
+              onChange={(e) => setNameVal(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") { e.preventDefault(); saveName(); }
+                if (e.key === "Escape") cancelEdit();
+              }}
+              autoFocus
+              disabled={busy}
+              className={inputCls + " py-1 text-sm"}
+            />
+            <button type="button" onClick={saveName} disabled={busy} className="text-green-600 hover:text-green-700 p-1 disabled:opacity-40" aria-label="Salvar nome" title="Salvar">
+              {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+            </button>
+            <button type="button" onClick={cancelEdit} disabled={busy} className="text-brown/40 hover:text-brown p-1 disabled:opacity-40" aria-label="Cancelar" title="Cancelar">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-medium text-brown truncate">{name}</span>
+            <button
+              type="button"
+              onClick={() => { setNameVal(name); setEditing(true); }}
+              disabled={busy || disabled}
+              className="text-brown/30 hover:text-orange p-0.5 disabled:opacity-40 flex-shrink-0"
+              aria-label={`Renomear ${name}`}
+              title="Renomear"
+            >
+              <Pencil className="w-3 h-3" />
+            </button>
+          </div>
+        )}
         <div className="text-[11px] text-brown/40">{img ? "Com foto (painel do catálogo)" : "Sem foto — painel fica com fundo padrão"}</div>
       </div>
 

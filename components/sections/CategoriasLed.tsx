@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import Reveal from "@/components/Reveal";
 import { DEFAULT_STORE } from "@/lib/defaults";
 
@@ -30,20 +31,20 @@ export default function CategoriasLed({ cards }: { cards?: Card[] }) {
                 {/* Só a foto no formato chanfrado — sem borda/contorno colorido */}
                 <div className="absolute inset-0 overflow-hidden bg-night-deep" style={{ clipPath: CHAMFER }}>
                   {/* Imagem apagada (padrão) */}
-                  <img
+                  <Image
                     src={c.off}
                     alt=""
-                    aria-hidden
-                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-out group-hover:opacity-0"
-                    loading="lazy"
+                    fill
+                    sizes="(min-width: 768px) 80vw, 100vw"
+                    className="object-cover transition-opacity duration-500 ease-out group-hover:opacity-0"
                   />
                   {/* Imagem acesa (hover) — crossfade */}
-                  <img
+                  <Image
                     src={c.on}
                     alt=""
-                    aria-hidden
-                    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
-                    loading="lazy"
+                    fill
+                    sizes="(min-width: 768px) 80vw, 100vw"
+                    className="object-cover opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
                   />
                   {/* Rótulo */}
                   <span className="absolute inset-0 flex items-center justify-center">

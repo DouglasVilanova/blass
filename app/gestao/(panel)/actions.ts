@@ -404,6 +404,33 @@ export async function createSubcategoryInline(
   }
 }
 
+export async function renameSubcategory(
+  catSlug: string,
+  subSlug: string,
+  newName: string
+): Promise<{ ok: true } | { error: string }> {
+  try {
+    await requireAdmin();
+    const name = newName.trim();
+    if (!name) return { error: "Nome obrigatório." };
+    const categories = await getCategories();
+    const cat = categories.find((c) => c.slug === catSlug);
+    if (!cat) return { error: "Categoria não encontrada." };
+    // Só o nome muda — slug (chave dos produtos) e foto são preservados.
+    await upsertCategory({
+      ...cat,
+      subcategories: cat.subcategories.map((s) =>
+        s.slug === subSlug ? { ...s, name } : s
+      ),
+    });
+    revalidatePath("/produtos", "layout");
+    revalidatePath("/gestao/categorias");
+    return { ok: true };
+  } catch (e: any) {
+    return { error: e?.message ?? "Erro ao renomear" };
+  }
+}
+
 export async function setCategoryImage(
   slug: string,
   image: string

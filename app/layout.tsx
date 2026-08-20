@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { preconnect } from "react-dom";
 import { Inter, Marcellus } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -115,6 +116,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();
+
+  // Abre a conexão com o Supabase cedo (imagens de produto/galeria são servidas de lá).
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (supabaseUrl) preconnect(supabaseUrl);
 
   return (
     <html lang="pt-BR" className={`${inter.variable} ${marcellus.variable} ${exo2.variable} ${punoer.variable}`}>

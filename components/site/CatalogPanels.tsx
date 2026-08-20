@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export type Panel = {
   label: string;
@@ -32,12 +33,12 @@ export default function CatalogPanels({ panels, tall = true }: { panels: Panel[]
           aria-label={`Ver ${p.label}`}
         >
           {p.image ? (
-            <img
+            <Image
               src={p.image}
               alt=""
-              aria-hidden
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              fill
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-brown via-brown-mid to-brown-dark" />

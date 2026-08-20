@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Star } from "lucide-react";
 import type { Category, Product } from "@/lib/types";
 import { productAttrs } from "@/lib/attributes";
@@ -27,10 +28,12 @@ export default function ProductCard({
       {/* Imagem */}
       <div className="relative aspect-square overflow-hidden bg-cream-dark">
         {product.image ? (
-          <img
+          <Image
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            fill
+            sizes="(min-width: 1280px) 320px, (min-width: 640px) 45vw, 90vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-brown/20">

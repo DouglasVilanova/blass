@@ -46,6 +46,27 @@ const nextConfig = {
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
+      // Assets de marca (/public/novo) — mudam só em deploy → cache forte com revalidação.
+      {
+        source: "/novo/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" },
+        ],
+      },
+      // Fontes self-hosted — praticamente imutáveis.
+      {
+        source: "/fonts/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      // Favicon.
+      {
+        source: "/icon.png",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=2592000" },
+        ],
+      },
     ];
   },
 };

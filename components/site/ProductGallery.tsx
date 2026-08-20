@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 
 export default function ProductGallery({
@@ -28,10 +29,13 @@ export default function ProductGallery({
     <div className="space-y-3 sticky top-4">
       {/* Main image */}
       <div className="relative aspect-square overflow-hidden bg-cream-dark border border-brown/10 group cursor-zoom-in" onClick={() => setLightbox(true)}>
-        <img
+        <Image
           src={images[active]}
           alt={`${productName} — foto ${active + 1}`}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          fill
+          sizes="(min-width: 768px) 45vw, 100vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          priority
         />
         <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-brown/70 text-white p-1.5 rounded">
           <ZoomIn className="w-4 h-4" />
@@ -74,9 +78,9 @@ export default function ProductGallery({
             <button
               key={i}
               onClick={() => setActive(i)}
-              className={`flex-shrink-0 w-16 h-16 overflow-hidden border-2 transition-all ${i === active ? "border-orange" : "border-transparent hover:border-brown/30"}`}
+              className={`relative flex-shrink-0 w-16 h-16 overflow-hidden border-2 transition-all ${i === active ? "border-orange" : "border-transparent hover:border-brown/30"}`}
             >
-              <img src={src} alt={`thumb ${i + 1}`} className="w-full h-full object-cover" />
+              <Image src={src} alt={`${productName} — miniatura ${i + 1}`} fill sizes="64px" className="object-cover" />
             </button>
           ))}
         </div>

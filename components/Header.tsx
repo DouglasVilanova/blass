@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { preload } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Instagram, Menu, X } from "lucide-react";
@@ -25,6 +26,8 @@ function WhatsappIcon({ className }: { className?: string }) {
 
 export default function Header({ settings }: { settings: SiteSettings }) {
   const [open, setOpen] = useState(false);
+  // Logo do topo é candidato a LCP — preload com prioridade alta.
+  preload("/novo/simbolo.webp", { as: "image", fetchPriority: "high" });
   // Home: header sobreposto ao hero (transparente). Demais páginas: ocupa espaço, fundo sólido.
   const isHome = usePathname() === "/";
   const wa = waLink(settings.contact.phoneDigits);
@@ -41,7 +44,7 @@ export default function Header({ settings }: { settings: SiteSettings }) {
       <div className="mx-auto max-w-7xl px-4 md:px-6 flex flex-col items-center gap-3">
         {/* Símbolo */}
         <Link href="/" aria-label="Início — Blass" className="block">
-          <img src="/novo/simbolo.webp" alt="Blass" className="h-10 md:h-14 w-auto drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]" />
+          <img src="/novo/simbolo.webp" alt="Blass" fetchPriority="high" className="h-10 md:h-14 w-auto drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]" />
         </Link>
 
         {/* Barra de menu — pill flutuante */}

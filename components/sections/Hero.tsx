@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { preload } from "react-dom";
 import type { SiteSettings } from "@/lib/types";
 import Reveal from "@/components/Reveal";
 
@@ -6,6 +7,9 @@ export default function Hero({ settings }: { settings: SiteSettings }) {
   // Banner oficial do mockup (BANNER HEADER.png → /novo/hero.webp)
   const image = "/novo/hero.webp";
   const t = settings.tagline;
+
+  // Preload da imagem LCP — descoberta cedo no HTML, com prioridade alta.
+  preload(image, { as: "image", fetchPriority: "high" });
 
   return (
     <section className="relative w-full overflow-hidden bg-[#4F2612]">
