@@ -25,6 +25,19 @@ const nextConfig = {
   poweredByHeader: false,
 
   images: {
+    // A cota de otimizacao de imagem da Vercel se esgotou e toda transformacao
+    // nova passou a responder 402 (OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED),
+    // quebrando imagens de forma intermitente: as ja cacheadas abriam, as novas nao.
+    //
+    // Nao dependemos desse otimizador: lib/upload.ts ja converte todo upload para
+    // WebP com Sharp e limita a dimensao (1600px produtos/blog, 2400px banners),
+    // entao o arquivo que sai do bucket ja chega pronto e leve (~60 KB).
+    //
+    // Com unoptimized, o next/image serve a URL original e nao consome cota.
+    // Para reativar a otimizacao (exige plano Vercel com cota disponivel),
+    // basta remover esta linha.
+    unoptimized: true,
+
     remotePatterns: [
       { protocol: "https", hostname: "*.supabase.co" },
       { protocol: "https", hostname: "*.supabase.in" },
