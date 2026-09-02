@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Reveal from "@/components/Reveal";
 import { DEFAULT_STORE } from "@/lib/defaults";
 
@@ -27,7 +28,7 @@ export default function Tendencias({
 
   return (
     <section className="relative overflow-hidden bg-night-deep">
-      <img src={img} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover" />
+      <Image src={img} alt="" fill sizes="100vw" className="object-cover" />
       <div className="absolute inset-0 bg-night-deep/55" />
 
       <div className="relative mx-auto max-w-6xl px-6 py-12 md:py-16 text-center">

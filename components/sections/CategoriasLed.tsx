@@ -35,7 +35,7 @@ export default function CategoriasLed({ cards }: { cards?: Card[] }) {
                     src={c.off}
                     alt=""
                     fill
-                    sizes="(min-width: 768px) 80vw, 100vw"
+                    sizes="(min-width: 1200px) 940px, (min-width: 768px) 80vw, 100vw"
                     className="object-cover transition-opacity duration-500 ease-out group-hover:opacity-0"
                   />
                   {/* Imagem acesa (hover) — crossfade */}
@@ -43,7 +43,7 @@ export default function CategoriasLed({ cards }: { cards?: Card[] }) {
                     src={c.on}
                     alt=""
                     fill
-                    sizes="(min-width: 768px) 80vw, 100vw"
+                    sizes="(min-width: 1200px) 940px, (min-width: 768px) 80vw, 100vw"
                     className="object-cover opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
                   />
                   {/* Rótulo */}

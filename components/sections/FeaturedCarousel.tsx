@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product } from "@/lib/types";
 
@@ -85,14 +86,16 @@ export default function FeaturedCarousel({
               {/* Imagem */}
               <Link
                 href={href}
-                className="block rounded-[18px] overflow-hidden border border-orange/50 aspect-[4/5] bg-night-deep group"
+                className="relative block rounded-[18px] overflow-hidden border border-orange/50 aspect-[4/5] bg-night-deep group"
               >
                 {current.image ? (
-                  <img
+                  <Image
                     key={current.image}
                     src={current.image}
                     alt={current.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(min-width: 1280px) 520px, (min-width: 768px) 40vw, 90vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-cream-light/20 font-exo text-9xl">B</div>

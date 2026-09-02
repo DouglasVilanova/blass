@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { DEFAULT_STORE } from "@/lib/defaults";
 
 export default function GaleriaDecadas({ images }: { images?: string[] }) {
@@ -19,14 +20,18 @@ export default function GaleriaDecadas({ images }: { images?: string[] }) {
       <div className="overflow-hidden">
         <div className="flex gap-2 w-max animate-marquee hover:[animation-play-state:paused]">
           {loop.map((src, i) => (
-            <img
+            <div
               key={i}
-              src={src}
-              alt=""
-              aria-hidden
-              loading="lazy"
-              className="h-[clamp(240px,48vh,600px)] w-[clamp(220px,34vw,440px)] object-cover flex-shrink-0 rounded-2xl"
-            />
+              className="relative h-[clamp(240px,48vh,600px)] w-[clamp(220px,34vw,440px)] flex-shrink-0 rounded-2xl overflow-hidden"
+            >
+              <Image
+                src={src}
+                alt=""
+                fill
+                sizes="(min-width: 1300px) 440px, (min-width: 768px) 34vw, 60vw"
+                className="object-cover"
+              />
+            </div>
           ))}
         </div>
       </div>

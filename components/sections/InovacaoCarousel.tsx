@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function InovacaoCarousel({ images }: { images: string[] }) {
@@ -23,13 +24,15 @@ export default function InovacaoCarousel({ images }: { images: string[] }) {
         {/* Slides empilhados com fade */}
         <div className="relative aspect-[16/10]">
           {list.map((src, i) => (
-            <img
+            <Image
               key={src + i}
               src={src}
               alt=""
               aria-hidden={i !== idx}
-              loading={i === 0 ? "eager" : "lazy"}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+              fill
+              sizes="(min-width: 1280px) 640px, (min-width: 768px) 50vw, 100vw"
+              priority={i === 0}
+              className={`object-cover transition-opacity duration-700 ${
                 i === idx ? "opacity-100" : "opacity-0"
               }`}
             />

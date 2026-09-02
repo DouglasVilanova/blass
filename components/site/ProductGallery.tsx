@@ -33,7 +33,7 @@ export default function ProductGallery({
           src={images[active]}
           alt={`${productName} — foto ${active + 1}`}
           fill
-          sizes="(min-width: 768px) 45vw, 100vw"
+          sizes="(min-width: 1280px) 620px, (min-width: 768px) 45vw, 100vw"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           priority
         />
@@ -98,12 +98,18 @@ export default function ProductGallery({
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <img
-            src={images[active]}
-            alt={productName}
-            className="max-h-[90vh] max-w-[90vw] object-contain"
+          <div
+            className="relative w-[90vw] h-[90vh]"
             onClick={(e) => e.stopPropagation()}
-          />
+          >
+            <Image
+              src={images[active]}
+              alt={productName}
+              fill
+              sizes="90vw"
+              className="object-contain"
+            />
+          </div>
           <button
             onClick={(e) => { e.stopPropagation(); next(); }}
             className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-2 rounded-full"

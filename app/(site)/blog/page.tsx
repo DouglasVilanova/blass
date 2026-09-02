@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { readStore } from "@/lib/store";
 import type { BlogCategory, BlogPost } from "@/lib/types";
 
@@ -26,11 +27,12 @@ function PostCard({
       {/* Foto + badge */}
       <div className={`relative overflow-hidden bg-cream-dark ${large ? "aspect-[16/9]" : "aspect-[16/10]"}`}>
         {post.coverImage && (
-          <img
+          <Image
             src={post.coverImage}
             alt={post.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
+            fill
+            sizes={large ? "(min-width: 1280px) 780px, (min-width: 768px) 66vw, 100vw" : "(min-width: 1280px) 400px, (min-width: 768px) 33vw, 100vw"}
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         )}
         {cat && (

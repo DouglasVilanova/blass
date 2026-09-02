@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { readStore } from "@/lib/store";
 import JsonLd from "@/components/JsonLd";
@@ -54,8 +55,15 @@ export default async function BlogPost({ params }: { params: { slug: string } })
         <h1 className="font-exo font-bold text-4xl text-brown mt-2">{post.title}</h1>
         {post.publishedAt && <div className="text-sm text-brown/60 mt-2">{new Date(post.publishedAt).toLocaleDateString("pt-BR")}</div>}
         {post.coverImage && (
-          <div className="mt-8 aspect-[16/9] overflow-hidden rounded-lg">
-            <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
+          <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-lg">
+            <Image
+              src={post.coverImage}
+              alt={post.title}
+              fill
+              sizes="(min-width: 768px) 768px, 100vw"
+              priority
+              className="object-cover"
+            />
           </div>
         )}
         {/* Corpo em HTML (gerado pelo editor rico, conteúdo só do admin) */}
